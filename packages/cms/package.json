@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "basehub dev",
-    "build": "basehub build",
+    "dev": "basehub dev & next dev",
+    "build": "basehub && next build",
     "analyze": "basehub",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"

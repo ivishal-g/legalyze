@@ -1,3 +1,5 @@
 import { setGlobalConfig } from "basehub";
 
-setGlobalConfig({});
+setGlobalConfig({
+  token: process.env.BASEHUB_TOKEN,
+});
