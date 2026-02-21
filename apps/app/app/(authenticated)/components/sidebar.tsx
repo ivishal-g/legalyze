@@ -61,6 +61,22 @@ const data = {
           url: "/upload",
         },
         {
+          title: "Administrative",
+          url: "/upload/administrative",
+        },
+        {
+          title: "Educational",
+          url: "/upload/educational",
+        },
+        {
+          title: "Legal",
+          url: "/upload/legal",
+        },
+        {
+          title: "Business Contract",
+          url: "/upload/business",
+        },
+        {
           title: "Recent Uploads",
           url: "/upload/history",
         },
