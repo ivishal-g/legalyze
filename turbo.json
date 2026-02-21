@@ -22,7 +22,8 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "passThroughEnv": ["NODE_ENV"]
     },
     "translate": {
       "dependsOn": ["^translate"],
