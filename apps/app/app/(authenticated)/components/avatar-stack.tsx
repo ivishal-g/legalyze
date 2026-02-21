@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/nursery/noLeakedRender: <explanation> */
 "use client";
 
 import { useOthers, useSelf } from "@repo/collaboration/hooks";

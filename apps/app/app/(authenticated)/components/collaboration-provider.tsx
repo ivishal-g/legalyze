@@ -36,7 +36,7 @@ export const CollaborationProvider = ({
     <Room
       authEndpoint="/api/collaboration/auth"
       fallback={
-        <div className="px-3 text-muted-foreground text-xs">Loading...</div>
+        <div className="flex h-full items-center justify-center">{}</div>
       }
       id={`${orgId}:presence`}
       resolveMentionSuggestions={resolveMentionSuggestions}

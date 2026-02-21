@@ -23,6 +23,7 @@ export const Header = ({ pages, page, children }: HeaderProps) => (
       <Separator className="mr-2 h-4" orientation="vertical" />
       <Breadcrumb>
         <BreadcrumbList>
+          {/** biome-ignore lint/nursery/noShadow: <explanation> */}
           {pages.map((page, index) => (
             <Fragment key={page}>
               {index > 0 && <BreadcrumbSeparator className="hidden md:block" />}

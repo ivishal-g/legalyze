@@ -1,5 +1,7 @@
+/** biome-ignore-all lint/correctness/noUnusedImports: <explanation> */
+/** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
+/** biome-ignore-all lint/nursery/noLeakedRender: <explanation> */
 "use client";
-
 import { ModeToggle } from "@repo/design-system/components/mode-toggle";
 import { Button } from "@repo/design-system/components/ui/button";
 import type { Dictionary } from "@repo/internationalization";

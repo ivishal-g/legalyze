@@ -9,13 +9,6 @@ import {
   CollapsibleTrigger,
 } from "@repo/design-system/components/ui/collapsible";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@repo/design-system/components/ui/dropdown-menu";
-import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -36,21 +29,11 @@ import {
 import { cn } from "@repo/design-system/lib/utils";
 import { NotificationsTrigger } from "@repo/notifications/components/trigger";
 import {
-  AnchorIcon,
-  BookOpenIcon,
-  BotIcon,
   ChevronRightIcon,
-  FolderIcon,
-  FrameIcon,
-  LifeBuoyIcon,
-  MapIcon,
-  MoreHorizontalIcon,
-  PieChartIcon,
-  SendIcon,
-  Settings2Icon,
-  ShareIcon,
-  SquareTerminalIcon,
-  Trash2Icon,
+  FileSearchIcon,
+  LayoutDashboardIcon,
+  MessageSquareIcon,
+  UploadIcon,
 } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -68,125 +51,80 @@ const data = {
   },
   navMain: [
     {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminalIcon,
+      title: "Upload Contract",
+      url: "/upload",
+      icon: UploadIcon,
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: "New Analysis",
+          url: "/upload",
         },
         {
-          title: "Starred",
-          url: "#",
+          title: "Recent Uploads",
+          url: "/upload/history",
         },
         {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: BotIcon,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
+          title: "Bulk Upload",
+          url: "/upload/bulk",
         },
       ],
     },
     {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpenIcon,
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: LayoutDashboardIcon,
       items: [
         {
-          title: "Introduction",
-          url: "#",
+          title: "All Contracts",
+          url: "/dashboard",
         },
         {
-          title: "Get Started",
-          url: "#",
+          title: "High Risk",
+          url: "/dashboard/high-risk",
         },
         {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
+          title: "Recent Analysis",
+          url: "/dashboard/recent",
         },
       ],
     },
     {
-      title: "Settings",
-      url: "#",
-      icon: Settings2Icon,
+      title: "Contract Chat",
+      url: "/chat",
+      icon: MessageSquareIcon,
       items: [
         {
-          title: "General",
-          url: "#",
+          title: "Active Chats",
+          url: "/chat",
         },
         {
-          title: "Team",
-          url: "#",
+          title: "Chat History",
+          url: "/chat/history",
+        },
+      ],
+    },
+    {
+      title: "Reports",
+      url: "/reports",
+      icon: FileSearchIcon,
+      items: [
+        {
+          title: "Risk Reports",
+          url: "/reports",
         },
         {
-          title: "Billing",
-          url: "#",
+          title: "Export History",
+          url: "/reports/exports",
         },
         {
-          title: "Limits",
-          url: "#",
+          title: "Analytics",
+          url: "/reports/analytics",
         },
       ],
     },
   ],
-  navSecondary: [
-    {
-      title: "Webhooks",
-      url: "/webhooks",
-      icon: AnchorIcon,
-    },
-    {
-      title: "Support",
-      url: "#",
-      icon: LifeBuoyIcon,
-    },
-    {
-      title: "Feedback",
-      url: "#",
-      icon: SendIcon,
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: FrameIcon,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChartIcon,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: MapIcon,
-    },
-  ],
+  navSecondary: [],
 };
 
 export const GlobalSidebar = ({ children }: GlobalSidebarProperties) => {
@@ -200,7 +138,7 @@ export const GlobalSidebar = ({ children }: GlobalSidebarProperties) => {
             <SidebarMenuItem>
               <div
                 className={cn(
-                  "h-[36px] overflow-hidden transition-all [&>div]:w-full",
+                  "h-9 overflow-hidden transition-all [&>div]:w-full",
                   sidebar.open ? "" : "-mx-1"
                 )}
               >
@@ -215,7 +153,7 @@ export const GlobalSidebar = ({ children }: GlobalSidebarProperties) => {
         <Search />
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel>Platform</SidebarGroupLabel>
+            <SidebarGroupLabel>Legal Analysis</SidebarGroupLabel>
             <SidebarMenu>
               {data.navMain.map((item) => (
                 <Collapsible
@@ -258,68 +196,10 @@ export const GlobalSidebar = ({ children }: GlobalSidebarProperties) => {
               ))}
             </SidebarMenu>
           </SidebarGroup>
-          <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-            <SidebarGroupLabel>Projects</SidebarGroupLabel>
-            <SidebarMenu>
-              {data.projects.map((item) => (
-                <SidebarMenuItem key={item.name}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.name}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <SidebarMenuAction showOnHover>
-                        <MoreHorizontalIcon />
-                        <span className="sr-only">More</span>
-                      </SidebarMenuAction>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="end"
-                      className="w-48"
-                      side="bottom"
-                    >
-                      <DropdownMenuItem>
-                        <FolderIcon className="text-muted-foreground" />
-                        <span>View Project</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <ShareIcon className="text-muted-foreground" />
-                        <span>Share Project</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <Trash2Icon className="text-muted-foreground" />
-                        <span>Delete Project</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </SidebarMenuItem>
-              ))}
-              <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <MoreHorizontalIcon />
-                  <span>More</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroup>
+          <SidebarGroup className="group-data-[collapsible=icon]:hidden" />
           <SidebarGroup className="mt-auto">
             <SidebarGroupContent>
-              <SidebarMenu>
-                {data.navSecondary.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <Link href={item.url}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
+              <SidebarMenu> </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
