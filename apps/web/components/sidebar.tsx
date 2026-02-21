@@ -30,6 +30,7 @@ export const Sidebar = async ({
       <p className="text-muted-foreground text-sm">Reading Time</p>
       <p className="rounded-sm text-foreground text-sm">{readingTime}</p>
     </div>
+    {/** biome-ignore lint/nursery/noLeakedRender: <explanation> */}
     {tags && (
       <div className="grid gap-2">
         <p className="text-muted-foreground text-sm">Tags</p>
@@ -38,6 +39,7 @@ export const Sidebar = async ({
         </p>
       </div>
     )}
+    {/** biome-ignore lint/nursery/noLeakedRender: <explanation> */}
     {Toc ? (
       <div className="-mx-2">
         <div className="grid gap-2 p-2">

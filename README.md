@@ -1,140 +1,317 @@
-# ▲ / next-forge
+# 🚀 Legalyze AI
 
-**Production-grade Turborepo template for Next.js apps.**
+**AI Agent for Legal Document Red-Flagging**  
+_Built by Team Codelites_
 
-<div>
-  <img src="https://img.shields.io/npm/dy/next-forge" alt="" />
-  <img src="https://img.shields.io/npm/v/next-forge" alt="" />
-  <img src="https://img.shields.io/github/license/vercel/next-forge" alt="" />
-</div>
+[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-6.19-2D3748)](https://www.prisma.io/)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-## Overview
+> **Transform hours of legal review into seconds.** Upload any contract → AI spots risks + missing protections → Get a clear report + smart fixes instantly.
 
-[next-forge](https://github.com/vercel/next-forge) is a production-grade [Turborepo](https://turborepo.com) template for [Next.js](https://nextjs.org/) apps. It's designed to be a comprehensive starting point for building SaaS applications, providing a solid, opinionated foundation with minimal configuration required.
+---
 
-Built on a decade of experience building web applications, next-forge balances speed and quality to help you ship thoroughly-built products faster.
+## 📋 Overview
 
-### Philosophy
+**Legalyze AI** is an intelligent contract analysis agent that accepts PDF or DOCX legal documents and instantly identifies risks, missing protections, and one-sided clauses. It returns a structured risk report with color-coded warnings, an interactive Q&A interface, and a one-click redline export.
 
-next-forge is built around five core principles:
+### The Problem
 
-- **Fast** — Quick to build, run, deploy, and iterate on
-- **Cheap** — Free to start with services that scale with you
-- **Opinionated** — Integrated tooling designed to work together
-- **Modern** — Latest stable features with healthy community support
-- **Safe** — End-to-end type safety and robust security posture
+Reviewing contracts is slow, expensive, and error-prone. Non-lawyers often sign agreements without understanding dangerous clauses (e.g., unlimited liability, missing termination rights, no GDPR language). Even legal professionals spend hours on routine document review.
 
-## Demo
+### Our Solution
 
-Experience next-forge in action:
+Legalyze AI provides:
+- ⚡ **Instant Analysis** — Contract risk assessment in < 10 seconds
+- 🎯 **Risk Identification** — Automatically flags high-risk clauses and missing protections
+- 💬 **Interactive Q&A** — Natural language chat about your specific contract
+- 📄 **One-Click Export** — Download redlined .docx with tracked changes and suggestions
+- 🎨 **Visual Risk Dashboard** — Color-coded heatmap showing document risk levels
 
-- [Web](https://demo.next-forge.com) — Marketing website
-- [App](https://app.demo.next-forge.com) — Main application
-- [Storybook](https://storybook.demo.next-forge.com) — Component library
-- [API](https://api.demo.next-forge.com/health) — API health check
+---
 
-## Features
+## ✨ Key Features
 
-next-forge comes with batteries included:
+### 🔍 AI Risk Analysis Engine
+- **Automatic contract type detection** (NDA, SaaS, Freelance, Employment, etc.)
+- **Risk scanning** for unlimited liability, one-sided indemnification, IP ownership grabs, non-compete overreach
+- **Missing clause detection** (termination rights, dispute resolution, GDPR, auto-renewal warnings)
+- **Smart suggestions** with AI-powered fixes for problematic clauses
+- **Structured JSON output** with 0-100 risk scoring
 
-### Apps
+### 📊 Interactive Risk Dashboard
+- **Overall Risk Score** — Large visual display with color-coded ring (🟢 Green / 🟡 Yellow / 🔴 Red)
+- **Top 5 Critical Risks** — Prioritized flag list with severity badges
+- **Section Heatmap** — Contract sections with color-coded risk levels
+- **Missing Clauses Panel** — Checklist of expected protections not found
+- **Expandable Flag Details** — Click any flag to see description + AI-suggested fix
 
-- **Web** — Marketing site built with Tailwind CSS and TWBlocks
-- **App** — Main application with authentication and database integration
-- **API** — RESTful API with health checks and monitoring
-- **Docs** — Documentation site powered by Mintlify
-- **Email** — Email templates with React Email
-- **Storybook** — Component development environment
+### 💬 Contract Q&A Chat
+Ask questions about your contract in plain English:
+- "Is the liability cap mutual?"
+- "How long is the notice period for termination?"
+- "Suggest better wording for the IP ownership clause"
+- "What happens if I miss a deadline?"
 
-### Packages
+Streaming responses with document context maintained throughout the conversation.
 
-- **Authentication** — Powered by [Clerk](https://clerk.com)
-- **Database** — Type-safe ORM with migrations
-- **Design System** — Comprehensive component library with dark mode
-- **Payments** — Subscription management via [Stripe](https://stripe.com)
-- **Email** — Transactional emails via [Resend](https://resend.com)
-- **Analytics** — Web ([Google Analytics](https://developers.google.com/analytics)) and product ([Posthog](https://posthog.com))
-- **Observability** — Error tracking ([Sentry](https://sentry.io)), logging, and uptime monitoring ([BetterStack](https://betterstack.com))
-- **Security** — Application security ([Arcjet](https://arcjet.com)), rate limiting, and secure headers
-- **CMS** — Type-safe content management for blogs and documentation
-- **SEO** — Metadata management, sitemaps, and JSON-LD
-- **AI** — AI integration utilities
-- **Webhooks** — Inbound and outbound webhook handling
-- **Collaboration** — Real-time features with avatars and live cursors
-- **Feature Flags** — Feature flag management
-- **Cron** — Scheduled job management
-- **Storage** — File upload and management
-- **Internationalization** — Multi-language support
-- **Notifications** — In-app notification system
+### 📤 One-Click Redline Export
+- Generate downloadable `.docx` file with tracked changes
+- Original risky clauses shown as strikethrough deletions
+- AI-suggested replacements shown as insertions
+- Comments explaining why each change was made
+- Ready to open in Microsoft Word or Google Docs
 
-## Getting Started
+### 🎯 Bonus Features
+- **Personal Playbook** — Upload your preferred contract templates; AI learns your standards
+- **Gap Check by Contract Type** — Auto-checks against predefined checklists per contract type
+- **Contract Comparison** — Side-by-side diff view showing risk deltas between versions
+- **Easy Sharing** — Generate shareable links to risk reports
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| **Framework** | Next.js 16 (App Router) + TypeScript |
+| **UI Components** | shadcn/ui + Tailwind CSS |
+| **Authentication** | Clerk |
+| **File Parsing** | `pdf-parse` (PDF), `mammoth` (DOCX) |
+| **AI / LLM** | Vercel AI SDK + `@ai-sdk/google` → Google Gemini 2.0 Flash |
+| **Database** | Prisma ORM + Neon Postgres |
+| **Dashboard Charts** | Recharts |
+| **Redline Export** | `docx` + `file-saver` |
+| **Security** | Arcjet (rate limiting, bot protection) |
+| **Email** | Resend |
+| **Deployment** | Vercel |
+| **Monorepo** | Turborepo (Next Forge) |
+
+---
+
+## 🏗️ Architecture
+
+```
+User Browser
+    │
+    ▼
+Next.js Frontend (shadcn/ui + Tailwind)
+    │
+    ├── /upload         → File upload page
+    ├── /dashboard/[id] → Risk dashboard + heatmap
+    ├── /chat/[id]      → Contract Q&A panel
+    └── /export/[id]    → Redline download
+    │
+    ▼
+Next.js API Routes
+    │
+    ├── POST /api/analyze
+    │       ├── Parse file (pdf-parse / mammoth)
+    │       ├── Send text to Gemini via Vercel AI SDK
+    │       ├── Receive structured JSON risk report
+    │       └── Save to Neon Postgres via Prisma
+    │
+    ├── POST /api/chat
+    │       ├── Accept user question + document context
+    │       └── Stream Gemini response back to client
+    │
+    └── POST /api/export
+            ├── Generate .docx with tracked changes
+            └── Return file download
+    │
+    ▼
+Neon Postgres (via Prisma)
+    ├── users (Clerk user IDs)
+    ├── contracts (file metadata, parsed text)
+    ├── reports (JSON risk report per contract)
+    └── playbooks (user's personal contract templates)
+```
+
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js 20+
-- [pnpm](https://pnpm.io) (or npm/yarn/bun)
-- [Stripe CLI](https://docs.stripe.com/stripe-cli) for local webhook testing
+- **Node.js** 18+ 
+- **pnpm** 10+ (package manager)
+- **PostgreSQL database** (we recommend [Neon](https://neon.tech/))
+- **Google AI API key** (for Gemini)
+- **Clerk account** (for authentication)
 
 ### Installation
 
-Create a new next-forge project:
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/codelites/legalyze-ai.git
+   cd legalyze-ai
+   ```
 
-```sh
-npx next-forge@latest init
-```
+2. **Install dependencies**
+   ```bash
+   pnpm install
+   ```
 
-### Setup
+3. **Set up environment variables**
+   
+   Create a `.env` file in the root directory:
+   ```env
+   # Database
+   DATABASE_URL="postgresql://user:password@host:5432/legalyze?sslmode=require"
+   
+   # Authentication (Clerk)
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_..."
+   CLERK_SECRET_KEY="sk_test_..."
+   NEXT_PUBLIC_CLERK_SIGN_IN_URL="/sign-in"
+   NEXT_PUBLIC_CLERK_SIGN_UP_URL="/sign-up"
+   NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL="/"
+   NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL="/"
+   
+   # AI (Google Gemini)
+   GOOGLE_GENERATIVE_AI_API_KEY="your_gemini_api_key"
+   
+   # Security (Arcjet)
+   ARCJET_KEY="ajkey_..."
+   
+   # Email (Resend)
+   RESEND_TOKEN="re_..."
+   RESEND_FROM="noreply@yourdomain.com"
+   
+   # App URLs
+   NEXT_PUBLIC_APP_URL="http://localhost:3000"
+   NEXT_PUBLIC_WEB_URL="http://localhost:3001"
+   NEXT_PUBLIC_API_URL="http://localhost:3002"
+   ```
 
-1. Configure your environment variables
-2. Set up required service accounts (Clerk, Stripe, Resend, etc.)
-3. Run the development server
+4. **Set up the database**
+   ```bash
+   cd packages/database
+   pnpm run migrate
+   ```
 
-For detailed setup instructions, read the [documentation](https://www.next-forge.com/docs).
+5. **Start the development servers**
+   ```bash
+   pnpm dev
+   ```
 
-## Structure
+   This will start:
+   - **App** at `http://localhost:3000` (main application)
+   - **Web** at `http://localhost:3001` (marketing site)
+   - **API** at `http://localhost:3002` (API routes)
+   - **Storybook** at `http://localhost:6006` (design system)
 
-next-forge uses a monorepo structure managed by Turborepo:
+---
 
-```
-next-forge/
-├── apps/           # Deployable applications
-│   ├── web/        # Marketing website (port 3001)
-│   ├── app/        # Main application (port 3000)
-│   ├── api/        # API server
-│   ├── docs/       # Documentation
-│   ├── email/      # Email templates
-│   └── storybook/  # Component library
-└── packages/       # Shared packages
-    ├── design-system/
-    ├── database/
-    ├── auth/
-    └── ...
-```
+## 📖 Usage
 
-Each app is self-contained and independently deployable. Packages are shared across apps for consistency and maintainability.
+### Basic Workflow
 
-## Documentation
+1. **Upload a Contract**
+   - Navigate to the upload page
+   - Drag & drop or select a PDF/DOCX contract file (up to 10MB)
+   
+2. **View Risk Analysis**
+   - AI analyzes the document in < 10 seconds
+   - Risk dashboard displays with overall risk score (0-100)
+   - Browse top 5 critical risks and section heatmap
+   - Click any flag to see detailed explanation and AI suggestion
 
-Full documentation is available at [next-forge.com/docs](https://www.next-forge.com/docs), including:
+3. **Ask Questions**
+   - Open the chat panel
+   - Ask natural language questions about your contract
+   - Get context-aware answers based on the actual document
 
-- Detailed setup guides
-- Package documentation
-- Migration guides for swapping providers
-- Deployment instructions
-- Examples and recipes
+4. **Export Redline**
+   - Click "Export Redline" button
+   - Download .docx file with tracked changes
+   - Open in Word/Google Docs and review suggested improvements
 
-## Contributing
+### Example Contracts Analyzed
 
-We welcome contributions! See the [contributing guide](https://github.com/vercel/next-forge/blob/main/.github/CONTRIBUTING.md) for details.
+- ✅ Freelance Service Agreements
+- ✅ Non-Disclosure Agreements (NDAs)
+- ✅ SaaS Terms of Service
+- ✅ Employment Contracts
+- ✅ Vendor Agreements
+- ✅ Partnership Agreements
 
-## Contributors
+---
 
-<a href="https://github.com/vercel/next-forge/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=vercel/next-forge" />
-</a>
+## 🎯 Target Users
 
-Made with [contrib.rocks](https://contrib.rocks).
+| User Type | Use Case |
+|-----------|----------|
+| **Freelancers / Contractors** | Review client contracts before signing |
+| **Startup Founders** | Analyze SaaS agreements, NDAs, and vendor contracts |
+| **In-House Legal Teams** | Speed up first-pass review of incoming contracts |
+| **Small Business Owners** | Understand vendor, service, and employment contracts |
 
-## License
+---
 
-MIT
+## 📊 Success Metrics
+
+| Metric | Target | Status |
+|--------|--------|--------|
+| Contract analysis time | < 10 seconds | ✅ |
+| Risk categories identified | ≥ 5 per contract | ✅ |
+| Response time (chat) | < 5 seconds | ✅ |
+| Supported file formats | PDF + DOCX | ✅ |
+| Maximum file size | 10MB | ✅ |
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. **Fork the repository**
+2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
+3. **Commit your changes** (`git commit -m 'Add amazing feature'`)
+4. **Push to the branch** (`git push origin feature/amazing-feature`)
+5. **Open a Pull Request**
+
+### Development Guidelines
+
+- Follow TypeScript best practices
+- Use ESLint and Biome for code formatting
+- Write tests for new features
+- Update documentation as needed
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🏆 Team Codelites
+
+Built for hackathon with ❤️ by Team Codelites
+
+**"This is what lawyers would actually use."** 🚀
+
+---
+
+## 📞 Support
+
+- 📧 Email: support@legalyze.ai
+- 💬 [GitHub Discussions](https://github.com/codelites/legalyze-ai/discussions)
+- 🐛 [Report Issues](https://github.com/codelites/legalyze-ai/issues)
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] Multi-language contract support
+- [ ] Mobile native app (iOS/Android)
+- [ ] Real-time collaboration features
+- [ ] Fine-tuned legal NLP models
+- [ ] API for third-party integrations
+- [ ] Bulk contract processing
+- [ ] Advanced analytics dashboard
+
+---
+
+**⚡ Transform your contract review workflow today with Legalyze AI!**

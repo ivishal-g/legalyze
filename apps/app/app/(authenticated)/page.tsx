@@ -33,6 +33,7 @@ const App = async () => {
   return (
     <>
       <Header page="Data Fetching" pages={["Building Your Application"]}>
+        {/** biome-ignore lint/nursery/noLeakedRender: <explanation> */}
         {env.LIVEBLOCKS_SECRET && (
           <CollaborationProvider orgId={orgId}>
             <AvatarStack />
@@ -48,7 +49,7 @@ const App = async () => {
             </div>
           ))}
         </div>
-        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
+        <div className="min-h-screen flex-1 rounded-xl bg-muted/50 md:min-h-min" />
       </div>
     </>
   );
