@@ -1,6 +1,6 @@
 import { legal } from "@repo/cms";
 import { Feed } from "@repo/cms/components/feed";
-import { Status } from "@repo/observability/status";
+import { Scale } from "lucide-react";
 import Link from "next/link";
 import { env } from "@/env";
 
@@ -51,18 +51,8 @@ export const Footer = () => (
                 <div className="flex flex-col items-start gap-8">
                   <div className="flex flex-col gap-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-                        <svg
-                          className="h-5 w-5 text-primary-foreground"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          viewBox="0 0 24 24"
-                        >
-                          <title>Legalyze Logo</title>
-                          <path d="M12 3C7 3 3 7 3 12s4 9 9 9 9-4 9-9-4-9-9-9z" />
-                          <path d="M8 12h8M12 8l4 4-4 4" />
-                        </svg>
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+                        <Scale className="h-5 w-5 text-primary-foreground" />
                       </div>
                       <h2 className="font-bold text-2xl tracking-tight">
                         Legalyze
@@ -73,7 +63,6 @@ export const Footer = () => (
                       sign.
                     </p>
                   </div>
-                  <Status />
                 </div>
                 <div className="grid items-start gap-10 lg:grid-cols-3">
                   {navigationItems.map((item) => (
