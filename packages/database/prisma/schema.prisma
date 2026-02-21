@@ -7,9 +7,9 @@ generator client {
 }
 
 datasource db {
-  provider     = "postgresql"
-  url          = env("DATABASE_URL")
-  relationMode = "prisma"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // This is a stub model.
@@ -17,4 +17,100 @@ datasource db {
 model Page {
   id   Int    @id @default(autoincrement())
   name String
+}
+// Contract categories
+enum ContractCategory {
+  ADMINISTRATIVE
+  EDUCATIONAL
+  LEGAL
+  BUSINESS
+}
+
+// Upload status
+enum UploadStatus {
+  UPLOADING
+  PROCESSING
+  COMPLETE
+  ERROR
+}
+
+// Risk level enum
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+// Main Contract model
+model Contract {
+  id            String           @id @default(cuid())
+  fileName      String
+  fileType      String           // pdf, docx
+  fileSize      Int              // bytes
+  fileUrl       String           // Vercel Blob URL
+  category      ContractCategory
+  status        UploadStatus     @default(UPLOADING)
+  
+  // Analysis results (populated after AI processing)
+  contractType  String?          // "NDA", "Freelance Agreement", etc.
+  riskScore     Int?             // 0-100
+  summary       String?          // Plain English summary
+  
+  // User & Organization
+  userId        String
+  organizationId String?
+  
+  // Timestamps
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  analyzedAt    DateTime?
+  
+  // Relations
+  riskFlags     RiskFlag[]
+  chatMessages  ChatMessage[]
+  
+  @@index([userId])
+  @@index([organizationId])
+  @@index([category])
+  @@index([status])
+}
+
+// Risk flags found in contracts
+model RiskFlag {
+  id          String    @id @default(cuid())
+  contractId  String
+  contract    Contract  @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  
+  title       String    // "Unlimited Liability §7.2"
+  description String    // Detailed explanation
+  section     String?   // Section reference
+  riskLevel   RiskLevel
+  suggestion  String?   // AI-suggested fix
+  
+  createdAt   DateTime  @default(now())
+  
+  @@index([contractId])
+}
+
+// Chat messages for contract Q&A
+model ChatMessage {
+  id          String   @id @default(cuid())
+  contractId  String
+  contract    Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  
+  role        String   // "user" or "assistant"
+  content     String
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([contractId])
+}
+
+// Missing clauses checklist
+model MissingClause {
+  id          String   @id @default(cuid())
+  contractId  String
+  clauseName  String   // "GDPR Clause", "Termination Rights"
+  
+  @@index([contractId])
 }
