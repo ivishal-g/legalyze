@@ -38,7 +38,7 @@ const Home = async ({ params }: HomeProps) => {
           Beta feature now available
         </div>
       )}
-      <Hero />
+      <Hero dictionary={dictionary} />
       <Cases dictionary={dictionary} />
       <Features dictionary={dictionary} />
 
