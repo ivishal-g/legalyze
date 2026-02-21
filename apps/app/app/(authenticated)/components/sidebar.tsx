@@ -29,13 +29,11 @@ import {
 import { cn } from "@repo/design-system/lib/utils";
 import { NotificationsTrigger } from "@repo/notifications/components/trigger";
 import {
-  BookOpenIcon,
   ChevronRightIcon,
   FileSearchIcon,
   FileTextIcon,
   LayoutDashboardIcon,
   MessageSquareIcon,
-  Settings2Icon,
   UploadIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -123,52 +121,6 @@ const data = {
         {
           title: "Analytics",
           url: "/reports/analytics",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "/docs",
-      icon: BookOpenIcon,
-      items: [
-        {
-          title: "Getting Started",
-          url: "/docs/getting-started",
-        },
-        {
-          title: "How It Works",
-          url: "/docs/how-it-works",
-        },
-        {
-          title: "Best Practices",
-          url: "/docs/best-practices",
-        },
-        {
-          title: "FAQs",
-          url: "/docs/faqs",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "/settings",
-      icon: Settings2Icon,
-      items: [
-        {
-          title: "General",
-          url: "/settings",
-        },
-        {
-          title: "Team",
-          url: "/settings/team",
-        },
-        {
-          title: "Playbooks",
-          url: "/settings/playbooks",
-        },
-        {
-          title: "Preferences",
-          url: "/settings/preferences",
         },
       ],
     },
