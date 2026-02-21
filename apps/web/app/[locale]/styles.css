@@ -1,5 +1,14 @@
 @import "@repo/design-system/styles/globals.css";
 
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 .shiki {
   background-color: var(--shiki-light-bg);
   color: var(--shiki-light);

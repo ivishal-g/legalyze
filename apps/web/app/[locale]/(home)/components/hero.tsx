@@ -1,64 +1,88 @@
-import { Badge } from "@repo/design-system/components/ui/badge";
-import { Button } from "@repo/design-system/components/ui/button";
-import { FileCheck, Sparkles, Upload } from "lucide-react";
+import type { Dictionary } from "@repo/internationalization";
+import { FileText, MessageSquare, Upload } from "lucide-react";
 import Link from "next/link";
 import { env } from "@/env";
 
-export const Hero = async () => (
+type HeroProps = {
+  dictionary: Dictionary;
+};
+
+const steps = [
+  {
+    icon: Upload,
+    step: "01",
+    label: "Upload contract",
+    sub: "PDF or DOCX, up to 10MB",
+  },
+  {
+    icon: FileText,
+    step: "02",
+    label: "AI scans for risks",
+    sub: "Flags clauses, scores risk 0–100",
+  },
+  {
+    icon: MessageSquare,
+    step: "03",
+    label: "Get report + fixes",
+    sub: "Plain-English summary + redline export",
+  },
+];
+
+export const Hero = ({ dictionary }: HeroProps) => (
   <div className="w-full">
     <div className="container mx-auto">
-      <div className="flex flex-col items-center justify-center gap-8 py-20 lg:py-40">
-        <div>
-          <Badge className="gap-2 px-4 py-2" variant="secondary">
-            <Sparkles className="h-4 w-4" />
-            AI Agent for Legal Document Red-Flagging
-          </Badge>
+      <div className="flex flex-col items-center justify-center gap-10 py-16 lg:py-24">
+        {/* Badge */}
+        <div className="rounded-full border bg-muted px-4 py-1.5 text-muted-foreground text-sm">
+          {dictionary.web.home.hero.badge}
         </div>
+
+        {/* Headline */}
         <div className="flex flex-col gap-4">
-          <h1 className="max-w-4xl text-center font-regular text-5xl tracking-tighter md:text-7xl">
-            Transform hours of legal review into{" "}
-            <span className="bg-linear-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
-              seconds
+          <h1 className="max-w-3xl text-center font-bold text-4xl tracking-tight md:text-6xl">
+            Transform Hours of Legal Review Into{" "}
+            <span className="bg-linear-to-r from-violet-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent">
+              Seconds
             </span>
           </h1>
-          <p className="max-w-3xl text-center text-lg text-muted-foreground leading-relaxed tracking-tight md:text-xl">
-            Upload any contract → AI spots risks + missing protections → Get a
-            clear report + smart fixes instantly. No legal expertise required.
+          <p className="mx-auto max-w-xl text-center text-base text-muted-foreground leading-relaxed md:text-lg">
+            {dictionary.web.home.meta.description}
           </p>
         </div>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button asChild className="gap-4" size="lg">
-            <Link href={env.NEXT_PUBLIC_APP_URL}>
-              <Upload className="h-4 w-4" />
-              Upload Contract
-            </Link>
-          </Button>
-          <Button asChild className="gap-4" size="lg" variant="outline">
-            <Link href="#demo">
-              <FileCheck className="h-4 w-4" />
-              See How It Works
-            </Link>
-          </Button>
-        </div>
-        <div className="flex flex-wrap items-center justify-center gap-8 pt-8 text-muted-foreground text-sm">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500/10">
-              <span className="font-semibold text-green-600">⚡</span>
+
+        {/* Step cards */}
+        <div className="grid w-full max-w-3xl grid-cols-1 gap-4 sm:grid-cols-3">
+          {steps.map((step, i) => (
+            <div className="group relative flex" key={step.step}>
+              {/* Connector line between cards */}
+              {i < steps.length - 1 && (
+                <div className="-right-2 absolute top-10 z-10 hidden h-px w-4 bg-linear-to-r from-border to-transparent sm:block" />
+              )}
+              <Link
+                className="hover:-translate-y-0.5 flex h-full w-full cursor-pointer flex-col gap-4 rounded-2xl border bg-card p-5 shadow-sm transition-transform duration-200"
+                href={`${env.NEXT_PUBLIC_APP_URL}/sign-up`}
+              >
+                {/* Icon + step number */}
+                <div className="flex items-start justify-between">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-muted">
+                    <step.icon className="h-5 w-5 text-foreground" />
+                  </div>
+                  <span className="font-bold font-mono text-2xl text-muted-foreground/40 leading-none">
+                    {step.step}
+                  </span>
+                </div>
+                {/* Text */}
+                <div className="flex flex-col gap-1">
+                  <p className="bg-linear-to-r from-violet-500 via-purple-500 to-indigo-500 bg-clip-text font-semibold text-base text-transparent leading-snug">
+                    {step.label}
+                  </p>
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    {step.sub}
+                  </p>
+                </div>
+              </Link>
             </div>
-            <span>&lt; 10 second analysis</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500/10">
-              <span className="font-semibold text-blue-600">🎯</span>
-            </div>
-            <span>5+ risk categories</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-500/10">
-              <span className="font-semibold text-purple-600">📄</span>
-            </div>
-            <span>One-click redline export</span>
-          </div>
+          ))}
         </div>
       </div>
     </div>

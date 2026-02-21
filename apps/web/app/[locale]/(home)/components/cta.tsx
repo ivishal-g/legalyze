@@ -9,7 +9,7 @@ type CTAProps = {
 };
 
 export const CTA = ({ dictionary }: CTAProps) => (
-  <div className="w-full py-20 lg:py-40">
+  <div className="w-full py-12 lg:py-20">
     <div className="container mx-auto">
       <div className="flex flex-col items-center gap-8 rounded-md bg-muted p-4 text-center lg:p-14">
         <div className="flex flex-col gap-2">

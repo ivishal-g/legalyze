@@ -1,8 +1,8 @@
 {
   "web": {
     "global": {
-      "primaryCta": "Book a call",
-      "secondaryCta": "Sign up"
+      "primaryCta": "Book a demo",
+      "secondaryCta": "Try for free"
     },
     "header": {
       "home": "Home",
@@ -19,131 +19,161 @@
     },
     "home": {
       "meta": {
-        "title": "Transform Your Business Operations Today",
-        "description": "In today's fast-paced world, your business deserves better than outdated trading systems. Our innovative platform streamlines operations, reduces complexity, and helps small businesses thrive in the modern economy."
+        "title": "Transform Hours of Legal Review Into Seconds",
+        "description": "Upload any contract. Legalyze AI instantly flags risky clauses, missing protections, and one-sided terms — then gives you smart fixes and a plain-English summary."
       },
       "hero": {
-        "announcement": "Read our latest article"
+        "announcement": "Read our latest article",
+        "badge": "AI-powered contract analysis · < 10 seconds"
       },
       "cases": {
-        "title": "Empowering Success Stories Across the Globe"
+        "title": "Trusted by freelancers, founders, and legal teams reviewing NDAs, SaaS contracts, employment agreements, and more"
       },
       "features": {
-        "title": "Powerful Tools for Modern Business",
-        "description": "Discover how our cutting-edge features can revolutionize your daily operations.",
+        "title": "Everything You Need to Review Any Contract",
+        "description": "From NDAs to employment agreements — Legalyze handles the analysis so you can focus on the decision.",
         "items": [
           {
-            "title": "Streamlined Operations",
-            "description": "Our platform streamlines operations, reduces complexity, and helps small businesses thrive in the modern economy."
+            "title": "AI Risk Analysis Engine",
+            "description": "Automatically detects unlimited liability, one-sided indemnification, IP grabs, non-compete overreach, and missing protections like termination rights or GDPR clauses."
           },
           {
-            "title": "Real-Time Analytics",
-            "description": "Get instant insights into your business performance with comprehensive analytics and reporting tools."
+            "title": "Interactive Contract Q&A",
+            "description": "Chat with your contract in plain English. Ask things like \"Is the liability cap mutual?\" or \"Suggest better wording for the IP clause\" and get instant answers."
           },
           {
-            "title": "Automated Workflows",
-            "description": "Save time and reduce errors with intelligent automation that handles repetitive tasks for you."
+            "title": "Visual Risk Dashboard",
+            "description": "Color-coded risk score (0–100), top 5 critical flags, section heatmap, and a missing-clauses checklist — all in one clear view."
           },
           {
-            "title": "Secure Transactions",
-            "description": "Rest easy knowing your business operations are protected by enterprise-grade security and encryption."
+            "title": "One-Click Redline Export",
+            "description": "Download a .docx with tracked changes: risky clauses struck through, AI-suggested replacements inserted, and comments explaining every edit."
           }
         ]
       },
-
-      "testimonials": {
-        "title": "Hear from Our Thriving Community",
+      "stats": {
+        "title": "Real Results, Real Impact",
+        "description": "Thousands of users rely on Legalyze every week to review contracts before signing — saving time, money, and legal headaches.",
         "items": [
           {
-            "title": "Best decision",
-            "description": "Our goal was to streamline SMB trade, making it easier and faster than ever and we did it together.",
+            "title": "Contracts analyzed",
+            "metric": "12000",
+            "delta": "35",
+            "type": "unit"
+          },
+          {
+            "title": "Risky clauses caught",
+            "metric": "84000",
+            "delta": "42",
+            "type": "unit"
+          },
+          {
+            "title": "Avg. analysis time (seconds)",
+            "metric": "8",
+            "delta": "15",
+            "type": "unit"
+          },
+          {
+            "title": "Users protected",
+            "metric": "5000",
+            "delta": "60",
+            "type": "unit"
+          }
+        ]
+      },
+      "testimonials": {
+        "title": "What People Are Saying",
+        "items": [
+          {
+            "title": "Caught a dangerous liability clause",
+            "description": "Legalyze flagged an unlimited liability clause in my freelance contract instantly. The suggested fix was specific and ready to send back to the client.",
             "author": {
-              "name": "Hayden Bleasel",
-              "image": "https://github.com/haydenbleasel.png"
+              "name": "Priya Sharma",
+              "image": "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya"
             }
           },
           {
-            "title": "Game changer",
-            "description": "This platform revolutionized how we handle our day-to-day operations. The efficiency gains have been remarkable.",
+            "title": "We now review every inbound contract",
+            "description": "Our legal team uses Legalyze as a first-pass filter. It cuts our review time by 70% and the risk dashboard is something we can actually share with founders.",
             "author": {
-              "name": "Lee Robinson",
-              "image": "https://github.com/leerob.png"
+              "name": "Arjun Mehta",
+              "image": "https://api.dicebear.com/7.x/avataaars/svg?seed=Arjun"
             }
           },
           {
-            "title": "Exceeded expectations",
-            "description": "Implementation was smooth and the results were immediate. Our team adapted quickly and productivity soared.",
+            "title": "The Q&A chat is a game changer",
+            "description": "I asked 'Is the IP clause mutual?' and got a clear answer with the exact paragraph cited. No lawyer needed for that first read-through.",
             "author": {
-              "name": "shadcn",
-              "image": "https://github.com/shadcn.png"
+              "name": "Kavita Nair",
+              "image": "https://api.dicebear.com/7.x/avataaars/svg?seed=Kavita"
             }
           },
           {
-            "title": "Outstanding support",
-            "description": "Not only is the platform powerful, but the customer support team has been exceptional in helping us maximize its potential.",
+            "title": "Redline export saved us days",
+            "description": "Uploaded a 40-page SaaS agreement. Got back a fully redlined .docx in under 10 seconds. Opened straight in Word and sent it back to the vendor.",
             "author": {
-              "name": "Pontus Abrahamsson",
-              "image": "https://github.com/pontusab.png"
+              "name": "Rohit Verma",
+              "image": "https://api.dicebear.com/7.x/avataaars/svg?seed=Rohit"
             }
           }
         ]
       },
       "faq": {
-        "title": "Common Questions, Expert Answers",
-        "description": "Get quick answers to your most pressing questions about our platform. We've compiled everything you need to know about transforming your business operations and getting started with modern trading solutions.",
-        "cta": "Any questions? Reach out",
+        "title": "Common Questions, Clear Answers",
+        "description": "Everything you need to know about how Legalyze analyzes your contracts.",
+        "cta": "Still have questions? Reach out",
         "items": [
           {
-            "question": "What is the platform?",
-            "answer": "The platform is a trading platform that allows you to trade with confidence."
+            "question": "What file types and contract types are supported?",
+            "answer": "Legalyze accepts PDF and DOCX files up to 10MB. It works with any contract type: NDAs, SaaS agreements, freelance contracts, employment agreements, vendor contracts, and more."
           },
           {
-            "question": "How secure is the platform?",
-            "answer": "Our platform employs enterprise-grade security measures, including end-to-end encryption and multi-factor authentication, to ensure your trading activities remain completely secure."
+            "question": "How fast is the analysis?",
+            "answer": "For contracts under 5,000 words, you'll have a full risk report in under 10 seconds. Longer documents may take slightly more time depending on complexity."
           },
           {
-            "question": "What trading features are available?",
-            "answer": "The platform offers comprehensive trading tools including real-time market data, advanced charting, automated trading strategies, and detailed analytics to support informed decision-making."
+            "question": "What does the AI actually check for?",
+            "answer": "It scans for high-risk clauses (unlimited liability, one-sided indemnification, IP ownership grabs, non-compete overreach) and missing protections (no termination rights, no dispute resolution, no GDPR clause, no auto-renewal warning), then gives each a 0–100 risk score."
           },
           {
-            "question": "How does pricing work?",
-            "answer": "We offer flexible pricing tiers designed to scale with your business needs, from starter plans for individual traders to enterprise solutions for large organizations."
+            "question": "Is my document kept private?",
+            "answer": "Yes. Your documents are processed securely, never shared with third parties, and are not used to train our models. You can delete your data at any time from your account."
           },
           {
-            "question": "What kind of support do you provide?",
-            "answer": "Our dedicated support team is available 24/7 through multiple channels including live chat, email, and phone. We also provide extensive documentation and training resources."
+            "question": "What is the redline export?",
+            "answer": "After analysis, you can download a .docx file with tracked changes: original risky clauses shown as strikethrough, AI-suggested replacements as insertions, and comments explaining each edit. Open directly in Word or Google Docs."
           }
         ]
       },
       "cta": {
-        "title": "Start Your Business Transformation",
-        "description": "Join thousands of forward-thinking businesses who have already modernized their operations. Our platform offers the tools, support, and efficiency you need to succeed in today's competitive market. Get started in minutes."
+        "title": "Start Reviewing Contracts Instantly",
+        "description": "Upload any PDF or DOCX contract and get a full AI-powered risk breakdown, redlined edits, and a plain-English summary in under 10 seconds. No legal background needed."
       }
     },
     "blog": {
       "meta": {
-        "title": "Blog",
-        "description": "Thoughts, ideas, and opinions."
+        "title": "Legalyze Blog",
+        "description": "Expert insights on contract risks, AI in legal tech, and how to protect yourself before you sign."
       }
     },
     "contact": {
       "meta": {
-        "title": "Let's Talk About Your Business",
-        "description": "Schedule a consultation with our team to discuss how we can help streamline your operations and drive growth for your business."
+        "title": "Get in Touch with Legalyze",
+        "description": "Have a complex contract or enterprise use case? Book a call with our team and we'll walk you through how Legalyze can protect you and your organization."
       },
       "hero": {
         "benefits": [
           {
-            "title": "Personalized Consultation",
-            "description": "Get tailored solutions and expert advice specific to your business needs."
+            "title": "Tailored for Your Document Type",
+            "description": "Whether it's a rental agreement, employment contract, or loan document, we'll show you exactly how Legalyze handles your specific case."
           },
           {
-            "title": "Seamless Integration",
-            "description": "We seamlessly integrate with your existing systems to ensure a smooth transition and minimal disruption."
+            "title": "Enterprise & Team Plans",
+            "description": "Need bulk document review or team access? We offer custom plans for legal teams, HR departments, and property managers."
           },
           {
-            "title": "Expert Guidance",
-            "description": "Our team of experts will guide you through the process, ensuring you get the most out of our platform."
+            "title": "Backed by Indian Legal Expertise",
+            "description": "Our AI is trained on Indian statutes and precedents. Our team can walk you through the legal framework behind every red flag we surface."
           }
         ],
         "form": {
