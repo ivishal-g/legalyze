@@ -8,6 +8,7 @@ export const Footer = () => (
   <Feed queries={[legal.postsQuery]}>
     {async ([data]) => {
       "use server";
+      await Promise.resolve();
 
       const navigationItems = [
         {
@@ -48,12 +49,28 @@ export const Footer = () => (
             <div className="container mx-auto">
               <div className="grid items-center gap-10 lg:grid-cols-2">
                 <div className="flex flex-col items-start gap-8">
-                  <div className="flex flex-col gap-2">
-                    <h2 className="max-w-xl text-left font-regular text-3xl tracking-tighter md:text-5xl">
-                      next-forge
-                    </h2>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
+                        <svg
+                          className="h-5 w-5 text-primary-foreground"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          viewBox="0 0 24 24"
+                        >
+                          <title>Legalyze Logo</title>
+                          <path d="M12 3C7 3 3 7 3 12s4 9 9 9 9-4 9-9-4-9-9-9z" />
+                          <path d="M8 12h8M12 8l4 4-4 4" />
+                        </svg>
+                      </div>
+                      <h2 className="font-bold text-2xl tracking-tight">
+                        Legalyze
+                      </h2>
+                    </div>
                     <p className="max-w-lg text-left text-foreground/75 text-lg leading-relaxed tracking-tight">
-                      This is the start of something new.
+                      AI-powered contract analysis. Protect yourself before you
+                      sign.
                     </p>
                   </div>
                   <Status />
@@ -69,14 +86,10 @@ export const Footer = () => (
                           <Link
                             className="flex items-center justify-between"
                             href={item.href}
-                            rel={
-                              item.href.includes("http")
-                                ? "noopener noreferrer"
-                                : undefined
-                            }
-                            target={
-                              item.href.includes("http") ? "_blank" : undefined
-                            }
+                            {...(item.href.includes("http") && {
+                              rel: "noopener noreferrer",
+                              target: "_blank",
+                            })}
                           >
                             <span className="text-xl">{item.title}</span>
                           </Link>
@@ -88,16 +101,10 @@ export const Footer = () => (
                             className="flex items-center justify-between"
                             href={subItem.href}
                             key={subItem.title}
-                            rel={
-                              subItem.href.includes("http")
-                                ? "noopener noreferrer"
-                                : undefined
-                            }
-                            target={
-                              subItem.href.includes("http")
-                                ? "_blank"
-                                : undefined
-                            }
+                            {...(subItem.href.includes("http") && {
+                              rel: "noopener noreferrer",
+                              target: "_blank",
+                            })}
                           >
                             <span className="text-foreground/75">
                               {subItem.title}

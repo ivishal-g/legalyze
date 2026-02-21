@@ -1,4 +1,4 @@
-import { ArrowLeftIcon } from "@radix-ui/react-icons";
+﻿import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { blog } from "@repo/cms";
 import { Body } from "@repo/cms/components/body";
 import { CodeBlock } from "@repo/cms/components/code-block";
@@ -8,10 +8,12 @@ import { TableOfContents } from "@repo/cms/components/toc";
 import { JsonLd } from "@repo/seo/json-ld";
 import { createMetadata } from "@repo/seo/metadata";
 import type { Metadata } from "next";
+import NextImage from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Sidebar } from "@/components/sidebar";
 import { env } from "@/env";
+import { staticPosts } from "../static-posts";
 
 const protocol = env.VERCEL_PROJECT_PRODUCTION_URL?.startsWith("https")
   ? "https"
@@ -19,21 +21,25 @@ const protocol = env.VERCEL_PROJECT_PRODUCTION_URL?.startsWith("https")
 const url = new URL(`${protocol}://${env.VERCEL_PROJECT_PRODUCTION_URL}`);
 
 type BlogPostProperties = {
-  readonly params: Promise<{
-    slug: string;
-  }>;
+  readonly params: Promise<{ slug: string }>;
 };
 
 export const generateMetadata = async ({
   params,
 }: BlogPostProperties): Promise<Metadata> => {
   const { slug } = await params;
+  const staticPost = staticPosts.find((p) => p.slug === slug);
+  if (staticPost) {
+    return createMetadata({
+      title: staticPost.title,
+      description: staticPost.description,
+      image: staticPost.image.url,
+    });
+  }
   const post = await blog.getPost(slug);
-
   if (!post) {
     return {};
   }
-
   return createMetadata({
     title: post._title,
     description: post.description,
@@ -43,25 +49,80 @@ export const generateMetadata = async ({
 
 export const generateStaticParams = async (): Promise<{ slug: string }[]> => {
   const posts = await blog.getPosts();
-
-  return posts.map(({ _slug }) => ({ slug: _slug }));
+  return [
+    ...posts.map(({ _slug }) => ({ slug: _slug })),
+    ...staticPosts.map((p) => ({ slug: p.slug })),
+  ];
 };
+
+const HIDDEN_SLUGS = ["understanding-gdpr", "gdpr"];
+const HIDDEN_TITLES = ["understanding gdpr"];
 
 const BlogPost = async ({ params }: BlogPostProperties) => {
   const { slug } = await params;
 
+  const staticPost = staticPosts.find((p) => p.slug === slug);
+  if (staticPost) {
+    return (
+      <div className="container mx-auto py-16">
+        <Link
+          className="mb-4 inline-flex items-center gap-1 text-muted-foreground text-sm focus:underline focus:outline-none"
+          href="/blog"
+        >
+          <ArrowLeftIcon className="h-4 w-4" />
+          Back to Blog
+        </Link>
+        <div className="mt-16 flex flex-col items-start gap-8 sm:flex-row">
+          <div className="sm:flex-1">
+            <div className="prose prose-neutral dark:prose-invert max-w-none">
+              <h1 className="scroll-m-20 text-balance font-extrabold text-4xl tracking-tight lg:text-5xl">
+                {staticPost.title}
+              </h1>
+              <p className="not-first:mt-6 text-balance leading-7">
+                {staticPost.description}
+              </p>
+              <NextImage
+                alt={staticPost.image.alt}
+                className="my-16 h-full w-full rounded-xl object-cover"
+                height={630}
+                src={staticPost.image.url}
+                width={1200}
+              />
+              <div className="mx-auto max-w-prose">
+                {staticPost.body.map((block) =>
+                  block.type === "h2" ? (
+                    <h2 key={block.text}>{block.text}</h2>
+                  ) : (
+                    <p key={block.text}>{block.text}</p>
+                  )
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="sticky top-24 hidden shrink-0 md:block">
+            <Sidebar
+              date={new Date(staticPost.date)}
+              readingTime={staticPost.readTime}
+              toc={null}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Feed queries={[blog.postQuery(slug)]}>
-      {/* biome-ignore lint/suspicious/useAwait: "Server Actions must be async" */}
       {async ([data]) => {
         "use server";
-
         const page = data.blog.posts.item;
-
-        if (!page) {
+        if (
+          !page ||
+          HIDDEN_TITLES.some((t) => page._title.toLowerCase().includes(t)) ||
+          HIDDEN_SLUGS.some((s) => page._slug.toLowerCase().includes(s))
+        ) {
           notFound();
         }
-
         return (
           <>
             <JsonLd
@@ -95,7 +156,7 @@ const BlogPost = async ({ params }: BlogPostProperties) => {
                     <h1 className="scroll-m-20 text-balance font-extrabold text-4xl tracking-tight lg:text-5xl">
                       {page._title}
                     </h1>
-                    <p className="text-balance leading-7 [&:not(:first-child)]:mt-6">
+                    <p className="not-first:mt-6 text-balance leading-7">
                       {page.description}
                     </p>
                     {page.image ? (
@@ -107,7 +168,7 @@ const BlogPost = async ({ params }: BlogPostProperties) => {
                         src={page.image.url}
                         width={page.image.width}
                       />
-                    ) : undefined}
+                    ) : null}
                     <div className="mx-auto max-w-prose">
                       <Body
                         components={{

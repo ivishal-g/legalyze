@@ -14,7 +14,7 @@ type FAQProps = {
 };
 
 export const FAQ = ({ dictionary }: FAQProps) => (
-  <div className="w-full py-20 lg:py-40">
+  <div className="w-full py-12 lg:py-20">
     <div className="container mx-auto">
       <div className="grid gap-10 lg:grid-cols-2">
         <div className="flex flex-col gap-10">
@@ -38,8 +38,8 @@ export const FAQ = ({ dictionary }: FAQProps) => (
           </div>
         </div>
         <Accordion className="w-full" collapsible type="single">
-          {dictionary.web.home.faq.items.map((item, index) => (
-            <AccordionItem key={index} value={`index-${index}`}>
+          {dictionary.web.home.faq.items.map((item) => (
+            <AccordionItem key={item.question} value={item.question}>
               <AccordionTrigger>{item.question}</AccordionTrigger>
               <AccordionContent>{item.answer}</AccordionContent>
             </AccordionItem>
