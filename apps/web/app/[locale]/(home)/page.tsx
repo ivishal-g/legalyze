@@ -7,7 +7,7 @@ import { CTA } from "./components/cta";
 import { FAQ } from "./components/faq";
 import { Features } from "./components/features";
 import { Hero } from "./components/hero";
-import { Stats } from "./components/stats";
+
 import { Testimonials } from "./components/testimonials";
 
 type HomeProps = {
@@ -32,15 +32,16 @@ const Home = async ({ params }: HomeProps) => {
 
   return (
     <>
+      {/** biome-ignore lint/nursery/noLeakedRender: <explanation> */}
       {betaFeature && (
         <div className="w-full bg-black py-2 text-center text-white">
           Beta feature now available
         </div>
       )}
-      <Hero dictionary={dictionary} />
+      <Hero />
       <Cases dictionary={dictionary} />
       <Features dictionary={dictionary} />
-      <Stats dictionary={dictionary} />
+
       <Testimonials dictionary={dictionary} />
       <FAQ dictionary={dictionary} />
       <CTA dictionary={dictionary} />

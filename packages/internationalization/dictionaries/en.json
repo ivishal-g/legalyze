@@ -50,36 +50,7 @@
           }
         ]
       },
-      "stats": {
-        "title": "Real Results, Real Impact",
-        "description": "Join thousands of businesses that have transformed their operations with our platform. Our solutions have helped companies reduce administrative overhead by 60% and increase trading efficiency by 45% on average.",
-        "items": [
-          {
-            "title": "Monthly active users",
-            "metric": "100000",
-            "delta": "10",
-            "type": "unit"
-          },
-          {
-            "title": "Daily active users",
-            "metric": "10000",
-            "delta": "-5",
-            "type": "unit"
-          },
-          {
-            "title": "Monthly recurring revenue",
-            "metric": "100000",
-            "delta": "20",
-            "type": "currency"
-          },
-          {
-            "title": "Cost per acquisition",
-            "metric": "100",
-            "delta": "-10",
-            "type": "currency"
-          }
-        ]
-      },
+
       "testimonials": {
         "title": "Hear from Our Thriving Community",
         "items": [

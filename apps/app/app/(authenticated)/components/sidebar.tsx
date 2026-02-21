@@ -9,13 +9,6 @@ import {
   CollapsibleTrigger,
 } from "@repo/design-system/components/ui/collapsible";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@repo/design-system/components/ui/dropdown-menu";
-import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -36,21 +29,14 @@ import {
 import { cn } from "@repo/design-system/lib/utils";
 import { NotificationsTrigger } from "@repo/notifications/components/trigger";
 import {
-  AnchorIcon,
   BookOpenIcon,
-  BotIcon,
   ChevronRightIcon,
-  FolderIcon,
-  FrameIcon,
-  LifeBuoyIcon,
-  MapIcon,
-  MoreHorizontalIcon,
-  PieChartIcon,
-  SendIcon,
+  FileSearchIcon,
+  FileTextIcon,
+  LayoutDashboardIcon,
+  MessageSquareIcon,
   Settings2Icon,
-  ShareIcon,
-  SquareTerminalIcon,
-  Trash2Icon,
+  UploadIcon,
 } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -68,123 +54,130 @@ const data = {
   },
   navMain: [
     {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminalIcon,
+      title: "Upload Contract",
+      url: "/upload",
+      icon: UploadIcon,
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: "New Analysis",
+          url: "/upload",
         },
         {
-          title: "Starred",
-          url: "#",
+          title: "Recent Uploads",
+          url: "/upload/history",
         },
         {
-          title: "Settings",
-          url: "#",
+          title: "Bulk Upload",
+          url: "/upload/bulk",
         },
       ],
     },
     {
-      title: "Models",
-      url: "#",
-      icon: BotIcon,
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: LayoutDashboardIcon,
       items: [
         {
-          title: "Genesis",
-          url: "#",
+          title: "All Contracts",
+          url: "/dashboard",
         },
         {
-          title: "Explorer",
-          url: "#",
+          title: "High Risk",
+          url: "/dashboard/high-risk",
         },
         {
-          title: "Quantum",
-          url: "#",
+          title: "Recent Analysis",
+          url: "/dashboard/recent",
+        },
+      ],
+    },
+    {
+      title: "Contract Chat",
+      url: "/chat",
+      icon: MessageSquareIcon,
+      items: [
+        {
+          title: "Active Chats",
+          url: "/chat",
+        },
+        {
+          title: "Chat History",
+          url: "/chat/history",
+        },
+      ],
+    },
+    {
+      title: "Reports",
+      url: "/reports",
+      icon: FileSearchIcon,
+      items: [
+        {
+          title: "Risk Reports",
+          url: "/reports",
+        },
+        {
+          title: "Export History",
+          url: "/reports/exports",
+        },
+        {
+          title: "Analytics",
+          url: "/reports/analytics",
         },
       ],
     },
     {
       title: "Documentation",
-      url: "#",
+      url: "/docs",
       icon: BookOpenIcon,
       items: [
         {
-          title: "Introduction",
-          url: "#",
+          title: "Getting Started",
+          url: "/docs/getting-started",
         },
         {
-          title: "Get Started",
-          url: "#",
+          title: "How It Works",
+          url: "/docs/how-it-works",
         },
         {
-          title: "Tutorials",
-          url: "#",
+          title: "Best Practices",
+          url: "/docs/best-practices",
         },
         {
-          title: "Changelog",
-          url: "#",
+          title: "FAQs",
+          url: "/docs/faqs",
         },
       ],
     },
     {
       title: "Settings",
-      url: "#",
+      url: "/settings",
       icon: Settings2Icon,
       items: [
         {
           title: "General",
-          url: "#",
+          url: "/settings",
         },
         {
           title: "Team",
-          url: "#",
+          url: "/settings/team",
         },
         {
-          title: "Billing",
-          url: "#",
+          title: "Playbooks",
+          url: "/settings/playbooks",
         },
         {
-          title: "Limits",
-          url: "#",
+          title: "Preferences",
+          url: "/settings/preferences",
         },
       ],
     },
   ],
   navSecondary: [
     {
-      title: "Webhooks",
-      url: "/webhooks",
-      icon: AnchorIcon,
-    },
-    {
-      title: "Support",
-      url: "#",
-      icon: LifeBuoyIcon,
-    },
-    {
-      title: "Feedback",
-      url: "#",
-      icon: SendIcon,
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: FrameIcon,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChartIcon,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: MapIcon,
+      title: "Templates",
+      url: "/templates",
+      icon: FileTextIcon,
     },
   ],
 };
@@ -200,7 +193,7 @@ export const GlobalSidebar = ({ children }: GlobalSidebarProperties) => {
             <SidebarMenuItem>
               <div
                 className={cn(
-                  "h-[36px] overflow-hidden transition-all [&>div]:w-full",
+                  "h-9 overflow-hidden transition-all [&>div]:w-full",
                   sidebar.open ? "" : "-mx-1"
                 )}
               >
@@ -215,7 +208,7 @@ export const GlobalSidebar = ({ children }: GlobalSidebarProperties) => {
         <Search />
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel>Platform</SidebarGroupLabel>
+            <SidebarGroupLabel>Legal Analysis</SidebarGroupLabel>
             <SidebarMenu>
               {data.navMain.map((item) => (
                 <Collapsible
@@ -258,54 +251,7 @@ export const GlobalSidebar = ({ children }: GlobalSidebarProperties) => {
               ))}
             </SidebarMenu>
           </SidebarGroup>
-          <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-            <SidebarGroupLabel>Projects</SidebarGroupLabel>
-            <SidebarMenu>
-              {data.projects.map((item) => (
-                <SidebarMenuItem key={item.name}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.name}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <SidebarMenuAction showOnHover>
-                        <MoreHorizontalIcon />
-                        <span className="sr-only">More</span>
-                      </SidebarMenuAction>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="end"
-                      className="w-48"
-                      side="bottom"
-                    >
-                      <DropdownMenuItem>
-                        <FolderIcon className="text-muted-foreground" />
-                        <span>View Project</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <ShareIcon className="text-muted-foreground" />
-                        <span>Share Project</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <Trash2Icon className="text-muted-foreground" />
-                        <span>Delete Project</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </SidebarMenuItem>
-              ))}
-              <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <MoreHorizontalIcon />
-                  <span>More</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroup>
+          <SidebarGroup className="group-data-[collapsible=icon]:hidden" />
           <SidebarGroup className="mt-auto">
             <SidebarGroupContent>
               <SidebarMenu>
