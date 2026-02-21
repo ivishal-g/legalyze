@@ -31,7 +31,6 @@ import { NotificationsTrigger } from "@repo/notifications/components/trigger";
 import {
   ChevronRightIcon,
   FileSearchIcon,
-  FileTextIcon,
   LayoutDashboardIcon,
   MessageSquareIcon,
   UploadIcon,
@@ -125,13 +124,7 @@ const data = {
       ],
     },
   ],
-  navSecondary: [
-    {
-      title: "Templates",
-      url: "/templates",
-      icon: FileTextIcon,
-    },
-  ],
+  navSecondary: [],
 };
 
 export const GlobalSidebar = ({ children }: GlobalSidebarProperties) => {
@@ -206,18 +199,7 @@ export const GlobalSidebar = ({ children }: GlobalSidebarProperties) => {
           <SidebarGroup className="group-data-[collapsible=icon]:hidden" />
           <SidebarGroup className="mt-auto">
             <SidebarGroupContent>
-              <SidebarMenu>
-                {data.navSecondary.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      <Link href={item.url}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
+              <SidebarMenu> </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
