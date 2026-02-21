@@ -622,8 +622,8 @@ importers:
   packages/collaboration:
     dependencies:
       '@liveblocks/client':
-        specifier: ^3.11.0
-        version: 3.11.0(@types/json-schema@7.0.15)
+        specifier: ^3.14.0
+        version: 3.14.0(@types/json-schema@7.0.15)
       '@liveblocks/node':
         specifier: ^3.11.0
         version: 3.11.0(@types/json-schema@7.0.15)
@@ -2758,8 +2758,16 @@ packages:
   '@liveblocks/client@3.11.0':
     resolution: {integrity: sha512-89PnIxYkDAwlGRMlALBo1NsAAUD15Ti2c9NVgnEUpqMpUdFCejwcnyc6jBLSXnS92wsu2lPXeLcQtT6ze7nKMg==}
 
+  '@liveblocks/client@3.14.0':
+    resolution: {integrity: sha512-+2VukE9iaVDaSTwMCQMBtIBwpn0t2PVfIVGLydT8O/nHGiA84ew2bV0pZc+Z+G4WQuFnAYcSBhddmZrdiQJyIQ==}
+
   '@liveblocks/core@3.11.0':
     resolution: {integrity: sha512-XWULxi0zdBOXH8UOdQHMA50ayhHLgvDOhLcCrP0VzA5Gn6Oa5tDXms5ekDZ9SBv4y+fxs9ckYaXRDlOYggnwTg==}
+    peerDependencies:
+      '@types/json-schema': ^7
+
+  '@liveblocks/core@3.14.0':
+    resolution: {integrity: sha512-U57xnMLBv3O271YS/RiL9Wj/E1F28D2rmVPpWorlHyEytXeodmibWM4oLgmoRBF/GPSCpCJGMcCTSRKFOcTLPg==}
     peerDependencies:
       '@types/json-schema': ^7
 
@@ -13231,7 +13239,17 @@ snapshots:
     transitivePeerDependencies:
       - '@types/json-schema'
 
+  '@liveblocks/client@3.14.0(@types/json-schema@7.0.15)':
+    dependencies:
+      '@liveblocks/core': 3.14.0(@types/json-schema@7.0.15)
+    transitivePeerDependencies:
+      - '@types/json-schema'
+
   '@liveblocks/core@3.11.0(@types/json-schema@7.0.15)':
+    dependencies:
+      '@types/json-schema': 7.0.15
+
+  '@liveblocks/core@3.14.0(@types/json-schema@7.0.15)':
     dependencies:
       '@types/json-schema': 7.0.15
 
