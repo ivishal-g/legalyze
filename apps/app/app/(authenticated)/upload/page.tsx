@@ -14,7 +14,7 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type UploadStatus = "idle" | "uploading" | "processing" | "complete" | "error";
 
@@ -28,43 +28,19 @@ type Contract = {
   contractType?: string;
   riskScore?: number;
   uploadedAt: Date;
+  errorMessage?: string;
 };
 
-const recentContracts: Contract[] = [
-  {
-    id: "1",
-    fileName: "client_agreement_v3.pdf",
-    fileType: "pdf",
-    size: 2_456_789,
-    status: "complete",
-    progress: 100,
-    contractType: "Freelance Agreement",
-    riskScore: 68,
-    uploadedAt: new Date(Date.now() - 3_600_000),
-  },
-  {
-    id: "2",
-    fileName: "mutual_nda_acme_corp.docx",
-    fileType: "docx",
-    size: 1_234_567,
-    status: "complete",
-    progress: 100,
-    contractType: "NDA",
-    riskScore: 32,
-    uploadedAt: new Date(Date.now() - 7_200_000),
-  },
-  {
-    id: "3",
-    fileName: "saas_terms_of_service.pdf",
-    fileType: "pdf",
-    size: 3_456_789,
-    status: "complete",
-    progress: 100,
-    contractType: "SaaS Agreement",
-    riskScore: 78,
-    uploadedAt: new Date(Date.now() - 86_400_000),
-  },
-];
+type DBContract = {
+  id: string;
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+  status: string;
+  contractType?: string;
+  riskScore?: number;
+  createdAt: string;
+};
 
 const formatBytes = (bytes: number) => {
   if (bytes === 0) {
@@ -98,8 +74,36 @@ const getRiskBgColor = (score: number) => {
 
 const UploadPage = () => {
   const [uploads, setUploads] = useState<Contract[]>([]);
+  const [recentContracts, setRecentContracts] = useState<Contract[]>([]);
   const [isDragActive, setIsDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const fetchRecentContracts = useCallback(async () => {
+    try {
+      const res = await fetch("/api/contracts?limit=10");
+      if (res.ok) {
+        const data = await res.json();
+        const contracts: Contract[] = data.contracts.map((c: DBContract) => ({
+          id: c.id,
+          fileName: c.fileName,
+          fileType: c.fileType,
+          size: c.fileSize,
+          status: c.status.toLowerCase() as UploadStatus,
+          progress: 100,
+          contractType: c.contractType,
+          riskScore: c.riskScore ?? undefined,
+          uploadedAt: new Date(c.createdAt),
+        }));
+        setRecentContracts(contracts);
+      }
+    } catch (error) {
+      console.error("Failed to fetch recent contracts:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchRecentContracts();
+  }, [fetchRecentContracts]);
 
   const processFiles = (files: FileList | null) => {
     if (!files) {
@@ -116,8 +120,9 @@ const UploadPage = () => {
         continue;
       }
 
+      const tempId = Math.random().toString(36).substring(7);
       const newContract: Contract = {
-        id: Math.random().toString(36).substring(7),
+        id: tempId,
         fileName: file.name,
         fileType: file.name.endsWith(".pdf") ? "pdf" : "docx",
         size: file.size,
@@ -127,45 +132,90 @@ const UploadPage = () => {
       };
 
       setUploads((prev) => [newContract, ...prev]);
+      uploadFile(file, tempId);
+    }
+  };
 
-      let progress = 0;
-      const uploadInterval = setInterval(() => {
-        progress += 15;
+  const uploadFile = async (file: File, tempId: string) => {
+    try {
+      const progressInterval = setInterval(() => {
         setUploads((prev) =>
-          prev.map((c) =>
-            c.id === newContract.id
-              ? { ...c, progress: Math.min(progress, 100) }
-              : c
+          prev.map((u) =>
+            u.id === tempId
+              ? { ...u, progress: Math.min(u.progress + 15, 90) }
+              : u
           )
         );
+      }, 300);
 
-        if (progress >= 100) {
-          clearInterval(uploadInterval);
-          setUploads((prev) =>
-            prev.map((c) =>
-              c.id === newContract.id ? { ...c, status: "processing" } : c
-            )
-          );
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("category", "LEGAL");
 
-          setTimeout(() => {
-            const types = ["Freelance Agreement", "NDA", "SaaS Agreement"];
-            const riskScore = Math.floor(Math.random() * 60) + 25;
-            setUploads((prev) =>
-              prev.map((c) =>
-                c.id === newContract.id
-                  ? {
-                      ...c,
-                      status: "complete",
-                      contractType:
-                        types[Math.floor(Math.random() * types.length)],
-                      riskScore,
-                    }
-                  : c
-              )
-            );
-          }, 2000);
-        }
-      }, 200);
+      const uploadRes = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      clearInterval(progressInterval);
+
+      if (!uploadRes.ok) {
+        const err = await uploadRes.json();
+        throw new Error(err.error || "Upload failed");
+      }
+
+      const { id: contractId } = await uploadRes.json();
+
+      setUploads((prev) =>
+        prev.map((u) =>
+          u.id === tempId
+            ? { ...u, id: contractId, progress: 100, status: "processing" }
+            : u
+        )
+      );
+
+      const analyzeRes = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contractId }),
+      });
+
+      if (!analyzeRes.ok) {
+        const err = await analyzeRes.json();
+        throw new Error(err.error || "Analysis failed");
+      }
+
+      const analysis = await analyzeRes.json();
+
+      setUploads((prev) =>
+        prev.map((u) =>
+          u.id === contractId
+            ? {
+                ...u,
+                status: "complete",
+                contractType: analysis.contractType,
+                riskScore: analysis.riskScore,
+              }
+            : u
+        )
+      );
+
+      fetchRecentContracts();
+    } catch (error) {
+      console.error("Upload/analysis error:", error);
+      setUploads((prev) =>
+        prev.map((u) =>
+          u.id === tempId
+            ? {
+                ...u,
+                status: "error",
+                progress: 0,
+                errorMessage:
+                  error instanceof Error ? error.message : "Upload failed",
+              }
+            : u
+        )
+      );
     }
   };
 
@@ -350,6 +400,18 @@ const UploadPage = () => {
                             >
                               <Loader2 className="h-3 w-3 animate-spin" />
                               Analyzing...
+                            </Badge>
+                          )}
+                          {contract.status === "error" && (
+                            <Badge
+                              className="font-mono text-xs"
+                              style={{
+                                background: "#ff3b5c20",
+                                color: "#ff3b5c",
+                              }}
+                              variant="secondary"
+                            >
+                              Error
                             </Badge>
                           )}
                           <Button

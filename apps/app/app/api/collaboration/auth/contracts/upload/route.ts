@@ -33,7 +33,7 @@ export async function POST(request: Request) {
         fileSize: file.size,
         fileUrl: blob.url,
         category: category as any,
-        status: "PROCESSING",
+        status: "UPLOADING",
         userId: session.userId,
         organizationId: session.orgId || null,
       },
