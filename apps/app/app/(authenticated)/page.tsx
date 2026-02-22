@@ -23,12 +23,7 @@ export const metadata: Metadata = {
 };
 
 const App = async () => {
-  let pages: Awaited<ReturnType<typeof database.page.findMany>> = [];
-  try {
-    pages = await database.page.findMany();
-  } catch (error) {
-    console.error("Failed to fetch pages from database:", error);
-  }
+  const pages = await database.page.findMany();
   const { orgId } = await auth();
 
   if (!orgId) {
