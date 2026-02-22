@@ -24,6 +24,10 @@ export const Footer = () => (
               title: "Blog",
               href: "/blog",
             },
+            {
+              title: "Team",
+              href: "/team",
+            },
           ],
         },
         {

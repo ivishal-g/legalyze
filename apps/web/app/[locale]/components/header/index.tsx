@@ -31,7 +31,10 @@ export const Header = ({ dictionary }: HeaderProps) => {
           <Button asChild size="sm" variant="ghost">
             <Link href="/contact">{dictionary.web.header.contact}</Link>
           </Button>
-        </nav>
+          <Button asChild size="sm" variant="ghost">
+          <Link href="/team">Team</Link>
+        </Button>
+      </nav>
 
         {/* Center: Logo */}
         <Link className="flex items-center justify-center gap-2.5" href="/">

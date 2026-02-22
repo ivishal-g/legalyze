@@ -63,7 +63,7 @@ const TeamPage = () => (
         <div className="grid w-full max-w-4xl grid-cols-1 gap-5 sm:grid-cols-2">
           {teamMembers.map((member) => (
             <div
-              className="agroup hover:-translate-y-1 relative flex flex-col gap-5 rounded-2xl border bg-card p-6 shadow-sm transition-all duration-300 hover:shadow-md"
+              className="group hover:-translate-y-1 relative flex flex-col gap-5 rounded-2xl border bg-card p-6 shadow-sm transition-all duration-300 hover:shadow-md"
               key={member.name}
             >
               {/* Avatar + Info */}
