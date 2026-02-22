@@ -1,429 +1,529 @@
 "use client";
 
-import { Badge } from "@repo/design-system/components/ui/badge";
 import { Button } from "@repo/design-system/components/ui/button";
 import { Card } from "@repo/design-system/components/ui/card";
-import { Progress } from "@repo/design-system/components/ui/progress";
-import { ScrollArea } from "@repo/design-system/components/ui/scroll-area";
 import { cn } from "@repo/design-system/lib/utils";
 import {
-  AlertCircle,
-  CheckCircle2,
-  FileText,
   Loader2,
   Upload,
-  X,
+  FileText,
+  CheckCircle2,
+  AlertCircle,
 } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
-type UploadStatus = "idle" | "uploading" | "processing" | "complete" | "error";
-
-type Contract = {
-  id: string;
-  fileName: string;
-  fileType: string;
-  size: number;
-  status: UploadStatus;
-  progress: number;
+interface ApiResponse {
+  success: boolean;
   contractType?: string;
   riskScore?: number;
-  category?: string;
-  uploadedAt: Date;
-  errorMessage?: string;
-};
+  analysis?: any;
+  error?: string;
+  timestamp?: string;
+}
 
-const formatBytes = (bytes: number) => {
-  if (bytes === 0) {
-    return "0 B";
-  }
-  const k = 1024;
-  const sizes = ["B", "KB", "MB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${Math.round(bytes / k ** i)} ${sizes[i]}`;
-};
-
-const getRiskColor = (score: number) => {
-  if (score >= 70) {
-    return "text-[#ff3b5c]";
-  }
-  if (score >= 40) {
-    return "text-[#f5a623]";
-  }
-  return "text-[#00d68f]";
-};
-
-const getRiskBgColor = (score: number) => {
-  if (score >= 70) {
-    return "bg-[#ff3b5c]/10";
-  }
-  if (score >= 40) {
-    return "bg-[#f5a623]/10";
-  }
-  return "bg-[#00d68f]/10";
-};
-
-const categories = [
-  { value: "LEGAL", label: "Legal" },
-  { value: "BUSINESS", label: "Business" },
-  { value: "EDUCATIONAL", label: "Educational" },
-  { value: "ADMINISTRATIVE", label: "Administrative" },
-];
-
-const BulkUploadPage = () => {
-  const [uploads, setUploads] = useState<Contract[]>([]);
-  const [isDragging, setIsDragging] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("LEGAL");
+const Upload3Page = () => {
+  const [isDragActive, setIsDragActive] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "success" | "error">("idle");
+  const [apiResponse, setApiResponse] = useState<ApiResponse | null>(null);
+  const [isDisabled, setIsDisabled] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleDragEnter = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-    const { files } = e.dataTransfer;
-    if (files?.length) {
-      handleFiles(files);
+  const processFile = async (file: File) => {
+    if (!file.name.endsWith(".pdf")) {
+      setUploadStatus("error");
+      setApiResponse({ success: false, error: "Only PDF files are supported" });
+      return;
     }
-  };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { files } = e.target;
-    if (files?.length) {
-      handleFiles(files);
+    if (file.size > 10_485_760) {
+      setUploadStatus("error");
+      setApiResponse({ success: false, error: "File size must be less than 10MB" });
+      return;
     }
-  };
 
-  const handleFiles = (files: FileList) => {
-    const validTypes = [
-      "application/pdf",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
-    const maxSize = 10 * 1024 * 1024;
+    setUploadStatus("uploading");
+    setIsDisabled(true);
+    setApiResponse(null);
 
-    for (const file of Array.from(files)) {
-      if (!validTypes.includes(file.type)) {
-        continue;
-      }
-      if (file.size > maxSize) {
-        continue;
-      }
-
-      const tempId = Math.random().toString(36).substring(7);
-      const newContract: Contract = {
-        id: tempId,
-        fileName: file.name,
-        fileType: file.name.split(".").pop() || "unknown",
-        size: file.size,
-        status: "uploading",
-        progress: 0,
-        category: selectedCategory,
-        uploadedAt: new Date(),
-      };
-
-      setUploads((prev) => [...prev, newContract]);
-      uploadFile(file, tempId);
-    }
-  };
-
-  const uploadFile = useCallback(async (file: File, tempId: string) => {
     try {
-      const progressInterval = setInterval(() => {
-        setUploads((prev) =>
-          prev.map((u) =>
-            u.id === tempId
-              ? { ...u, progress: Math.min(u.progress + 15, 90) }
-              : u
-          )
-        );
-      }, 300);
-
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("category", selectedCategory);
 
-      const uploadRes = await fetch("/api/upload", {
+      const response = await fetch("http://localhost:3002/api/upload/", {
         method: "POST",
         body: formData,
       });
 
-      clearInterval(progressInterval);
-
-      if (!uploadRes.ok) {
-        const err = await uploadRes.json();
-        throw new Error(err.error || "Upload failed");
+      if (!response.ok) {
+        throw new Error("Upload failed");
       }
 
-      const { id: contractId } = await uploadRes.json();
-
-      setUploads((prev) =>
-        prev.map((u) =>
-          u.id === tempId
-            ? { ...u, id: contractId, progress: 100, status: "processing" }
-            : u
-        )
-      );
-
-      const analyzeRes = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contractId }),
-      });
-
-      if (!analyzeRes.ok) {
-        const err = await analyzeRes.json();
-        throw new Error(err.error || "Analysis failed");
-      }
-
-      const analysis = await analyzeRes.json();
-
-      setUploads((prev) =>
-        prev.map((u) =>
-          u.id === contractId
-            ? {
-                ...u,
-                status: "complete",
-                contractType: analysis.contractType,
-                riskScore: analysis.riskScore,
-              }
-            : u
-        )
-      );
+      const result = await response.json();
+      setUploadStatus("success");
+      setApiResponse(result);
     } catch (error) {
-      console.error("Upload/analysis error:", error);
-      setUploads((prev) =>
-        prev.map((u) =>
-          u.id === tempId
-            ? {
-                ...u,
-                status: "error",
-                progress: 0,
-                errorMessage:
-                  error instanceof Error ? error.message : "Upload failed",
-              }
-            : u
-        )
-      );
+      console.error("Upload error:", error);
+      setUploadStatus("error");
+      setApiResponse({
+        success: false,
+        error: error instanceof Error ? error.message : "Upload failed",
+      });
+    } finally {
+      setIsDisabled(false);
     }
-  }, [selectedCategory]);
-
-  const removeUpload = (id: string) => {
-    setUploads((prev) => prev.filter((upload) => upload.id !== id));
   };
 
-  const completedCount = uploads.filter((u) => u.status === "complete").length;
-  const processingCount = uploads.filter(
-    (u) => u.status === "uploading" || u.status === "processing"
-  ).length;
-  const errorCount = uploads.filter((u) => u.status === "error").length;
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragActive(false);
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      processFile(files[0]);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (!isDisabled) {
+      setIsDragActive(true);
+    }
+  };
+
+  const handleDragLeave = () => {
+    setIsDragActive(false);
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      processFile(files[0]);
+    }
+  };
+
+  const resetUpload = () => {
+    setUploadStatus("idle");
+    setApiResponse(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   return (
-    <div className="flex h-full flex-col gap-6 p-6">
-      <div>
-        <h1 className="mb-2 font-semibold text-3xl">Bulk Upload</h1>
-        <p className="text-muted-foreground">
-          Upload multiple contracts at once for batch AI analysis. Select a
-          category and drop all your files.
-        </p>
+    <div className="flex flex-1 flex-col gap-6 p-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="font-bold text-3xl tracking-tight">Simple API Test</h1>
+          <p className="mt-1 text-muted-foreground text-sm">
+            Test PDF upload to n8n API
+          </p>
+        </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {categories.map((cat) => (
-          <Button
-            className={cn(
-              "font-mono text-sm",
-              selectedCategory === cat.value
-                ? "bg-[#a78bfa] text-white hover:bg-[#9b7fe6]"
-                : ""
-            )}
-            key={cat.value}
-            onClick={() => setSelectedCategory(cat.value)}
-            size="sm"
-            type="button"
-            variant={selectedCategory === cat.value ? "default" : "outline"}
-          >
-            {cat.label}
-          </Button>
-        ))}
-      </div>
-
-      <Card className="border-[#1e1e2e] bg-[#111118]">
-        <button
+      <Card className="border-[#1e1e2e] bg-[#111118] p-8">
+        <div
           className={cn(
-            "flex min-h-[250px] w-full flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed p-8 transition-colors",
-            isDragging
+            "flex w-full flex-col items-center justify-center rounded-lg border-2 border-dashed py-12 transition-colors",
+            isDragActive && !isDisabled
               ? "border-[#a78bfa] bg-[#a78bfa]/5"
-              : "border-[#1e1e2e] bg-[#0a0a0f] hover:border-[#a78bfa]/50 hover:bg-[#111118]"
+              : isDisabled
+              ? "border-[#374151] bg-[#1a1a1f] cursor-not-allowed"
+              : "border-[#1e1e2e] bg-[#0a0a0f] cursor-pointer"
           )}
-          onClick={() => fileInputRef.current?.click()}
-          onDragEnter={handleDragEnter}
+          onClick={() => !isDisabled && fileInputRef.current?.click()}
           onDragLeave={handleDragLeave}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
-          type="button"
         >
-          <div className="rounded-full bg-[#a78bfa]/10 p-4">
-            <Upload className="h-8 w-8 text-[#a78bfa]" />
-          </div>
-          <div className="text-center">
-            <p className="mb-1 font-medium">
-              {isDragging
-                ? "Drop all files here"
-                : "Drop multiple files or click to browse"}
-            </p>
-            <p className="text-muted-foreground text-sm">
-              PDF or DOCX • Max 10MB each • No limit on number of files
-            </p>
-          </div>
           <input
-            accept=".pdf,.docx"
+            accept=".pdf"
             className="hidden"
-            multiple
-            onChange={handleFileSelect}
+            disabled={isDisabled}
+            onChange={handleFileInputChange}
             ref={fileInputRef}
             type="file"
           />
-        </button>
+          <div
+            className={cn(
+              "mb-4 flex h-16 w-16 items-center justify-center rounded-full transition-colors",
+              isDragActive && !isDisabled
+                ? "bg-[#a78bfa]/20"
+                : isDisabled
+                ? "bg-[#374151]"
+                : "bg-[#1e1e2e]"
+            )}
+          >
+            {uploadStatus === "uploading" ? (
+              <Loader2 className="h-8 w-8 animate-spin text-[#a78bfa]" />
+            ) : uploadStatus === "success" ? (
+              <CheckCircle2 className="h-8 w-8 text-[#00d68f]" />
+            ) : uploadStatus === "error" ? (
+              <AlertCircle className="h-8 w-8 text-[#ff3b5c]" />
+            ) : (
+              <Upload
+                className={cn(
+                  "h-8 w-8 transition-colors",
+                  isDragActive && !isDisabled
+                    ? "text-[#a78bfa]"
+                    : isDisabled
+                    ? "text-[#6b7280]"
+                    : "text-muted-foreground"
+                )}
+              />
+            )}
+          </div>
+          <h3 className="mb-2 font-semibold text-lg">
+            {uploadStatus === "uploading"
+              ? "Processing PDF..."
+              : uploadStatus === "success"
+              ? "Upload Complete!"
+              : uploadStatus === "error"
+              ? "Upload Failed"
+              : isDragActive
+              ? "Drop PDF here"
+              : "Drop PDF or click to upload"}
+          </h3>
+          <p className="mb-4 text-muted-foreground text-sm">
+            {uploadStatus === "uploading"
+              ? "Sending to n8n for analysis..."
+              : uploadStatus === "success"
+              ? "PDF successfully processed"
+              : uploadStatus === "error"
+              ? apiResponse?.error || "Something went wrong"
+              : "PDF files only, up to 10MB"}
+          </p>
+          {!isDisabled && (
+            <span className="inline-flex items-center gap-2 rounded-lg bg-[#a78bfa] px-6 py-3 font-semibold text-sm transition-colors hover:bg-[#9b7fe6] cursor-pointer">
+              <Upload className="h-4 w-4" />
+              {uploadStatus === "success" ? "Upload Another" : "Browse Files"}
+            </span>
+          )}
+        </div>
       </Card>
 
-      {uploads.length > 0 && (
-        <>
-          <div className="flex items-center gap-4">
-            <h2 className="font-semibold text-xl">
-              Batch Queue ({uploads.length} files)
-            </h2>
-            <div className="flex gap-2">
-              {completedCount > 0 && (
-                <Badge
-                  className="font-mono text-xs"
-                  style={{ background: "#00d68f20", color: "#00d68f" }}
-                  variant="secondary"
-                >
-                  ✓ {completedCount} done
-                </Badge>
-              )}
-              {processingCount > 0 && (
-                <Badge
-                  className="font-mono text-xs"
-                  style={{ background: "#a78bfa20", color: "#a78bfa" }}
-                  variant="secondary"
-                >
-                  ⏳ {processingCount} in progress
-                </Badge>
-              )}
-              {errorCount > 0 && (
-                <Badge
-                  className="font-mono text-xs"
-                  style={{ background: "#ff3b5c20", color: "#ff3b5c" }}
-                  variant="secondary"
-                >
-                  ✕ {errorCount} errors
-                </Badge>
-              )}
+      {/* API Response Display */}
+      {apiResponse && (
+        <Card className="border-[#1e1e2e] bg-[#111118] p-6 mt-6">
+          <div className="flex items-start gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-[#1e1e2e]">
+              <FileText className="h-6 w-6 text-muted-foreground" />
             </div>
-          </div>
-
-          <ScrollArea className="h-[calc(100vh-520px)]">
-            <div className="space-y-3">
-              {uploads.map((upload) => (
-                <Card
-                  className="border-[#1e1e2e] bg-[#111118] p-3"
-                  key={upload.id}
-                >
-                  <div className="flex items-center gap-3">
-                    <FileText className="h-5 w-5 shrink-0 text-muted-foreground" />
-
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <p className="font-medium text-sm">
-                          {upload.fileName}
-                        </p>
-                        <div className="flex items-center gap-2">
-                          {upload.status === "complete" && (
-                            <>
-                              <Badge
-                                className="font-mono text-xs"
-                                style={{
-                                  background: "#1e1e2e",
-                                  color: "#a78bfa",
-                                }}
-                                variant="secondary"
-                              >
-                                {upload.contractType}
-                              </Badge>
-                              {upload.riskScore !== undefined && (
-                                <Badge
-                                  className={cn(
-                                    "font-mono text-xs",
-                                    getRiskBgColor(upload.riskScore),
-                                    getRiskColor(upload.riskScore)
-                                  )}
-                                  variant="secondary"
-                                >
-                                  {upload.riskScore}/100
-                                </Badge>
-                              )}
-                              <CheckCircle2 className="h-4 w-4 text-[#00d68f]" />
-                            </>
-                          )}
-                          {upload.status === "uploading" && (
-                            <Loader2 className="h-4 w-4 animate-spin text-[#a78bfa]" />
-                          )}
-                          {upload.status === "processing" && (
-                            <Loader2 className="h-4 w-4 animate-spin text-[#f5a623]" />
-                          )}
-                          {upload.status === "error" && (
-                            <AlertCircle className="h-4 w-4 text-[#ff3b5c]" />
-                          )}
-                          <Button
-                            onClick={() => removeUpload(upload.id)}
-                            size="icon"
-                            type="button"
-                            variant="ghost"
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
+            <div className="flex-1 space-y-4">
+              {apiResponse.success && apiResponse.analysis ? (
+                <>
+                  {/* Risk Assessment */}
+                  <div>
+                    <h3 className="font-semibold text-lg mb-3">n8n Analysis Results</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                      <div className="bg-[#1e1e2e] p-4 rounded-lg">
+                        <div className="text-sm text-muted-foreground mb-1">Risk Level</div>
+                        <div className={`text-2xl font-bold capitalize ${
+                          apiResponse.analysis.overall_risk ? (
+                            apiResponse.analysis.overall_risk === "High" ? "text-red-500" :
+                            apiResponse.analysis.overall_risk === "Medium" ? "text-yellow-500" :
+                            "text-green-500"
+                          ) : (
+                            // Calculate from clauses if no overall_risk
+                            apiResponse.analysis.clauses?.some((c: any) => c.risk_level === "High") ? "text-red-500" :
+                            apiResponse.analysis.clauses?.some((c: any) => c.risk_level === "Medium") ? "text-yellow-500" :
+                            "text-green-500"
+                          )
+                        }`}>
+                          {apiResponse.analysis.overall_risk ||
+                           (apiResponse.analysis.clauses?.some((c: any) => c.risk_level === "High") ? "High" :
+                            apiResponse.analysis.clauses?.some((c: any) => c.risk_level === "Medium") ? "Medium" : "Low")}
                         </div>
                       </div>
-
-                      {(upload.status === "uploading" ||
-                        upload.status === "processing") && (
-                        <Progress
-                          className="mt-2 h-1"
-                          value={upload.progress}
-                        />
-                      )}
-
-                      {upload.status === "error" && (
-                        <p className="mt-1 text-[#ff3b5c] text-xs">
-                          {upload.errorMessage || "Failed"}
-                        </p>
-                      )}
+                      <div className="bg-[#1e1e2e] p-4 rounded-lg">
+                        <div className="text-sm text-muted-foreground mb-1">Total Clauses</div>
+                        <div className="text-2xl font-bold">
+                          {apiResponse.analysis.clauses?.length || 0}
+                        </div>
+                      </div>
+                      <div className="bg-[#1e1e2e] p-4 rounded-lg">
+                        <div className="text-sm text-muted-foreground mb-1">Risk Score</div>
+                        <div className="text-2xl font-bold">
+                          {apiResponse.riskScore ||
+                           (apiResponse.analysis.clauses?.some((c: any) => c.risk_level === "High") ? 80 :
+                            apiResponse.analysis.clauses?.some((c: any) => c.risk_level === "Medium") ? 50 : 20)}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </Card>
-              ))}
+
+                  {/* Summary */}
+                  {apiResponse.analysis.summary && (
+                    <div>
+                      <h4 className="font-semibold text-md mb-2">Summary</h4>
+                      <p className="text-muted-foreground">{apiResponse.analysis.summary}</p>
+                    </div>
+                  )}
+
+                  {/* Document Summary */}
+                  {apiResponse.analysis.document_summary && (
+                    <div>
+                      <h4 className="font-semibold text-md mb-3">Document Summary</h4>
+                      <div className="bg-[#1e1e2e] p-4 rounded-lg">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          <div>
+                            <div className="text-sm text-muted-foreground">Document Type</div>
+                            <div className="font-medium">{apiResponse.analysis.document_summary.title}</div>
+                          </div>
+                          <div>
+                            <div className="text-sm text-muted-foreground">Total Clauses</div>
+                            <div className="font-medium">{apiResponse.analysis.document_summary.total_clauses}</div>
+                          </div>
+                          <div>
+                            <div className="text-sm text-muted-foreground">Risk Level</div>
+                            <div className={`font-medium capitalize ${
+                              apiResponse.analysis.document_summary.overall_risk === "High" ? "text-red-500" :
+                              apiResponse.analysis.document_summary.overall_risk === "Medium" ? "text-yellow-500" :
+                              "text-green-500"
+                            }`}>
+                              {apiResponse.analysis.document_summary.overall_risk}
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-sm text-muted-foreground">Risk Score</div>
+                            <div className="font-medium">{apiResponse.analysis.document_summary.risk_score}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Risk Breakdown */}
+                  {apiResponse.analysis.risk_breakdown && (
+                    <div>
+                      <h4 className="font-semibold text-md mb-3">Risk Breakdown</h4>
+                      <div className="bg-[#1e1e2e] p-4 rounded-lg">
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="text-center">
+                            <div className="text-3xl font-bold text-red-500">{apiResponse.analysis.risk_breakdown.high_risk}</div>
+                            <div className="text-sm text-muted-foreground">High Risk</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-3xl font-bold text-yellow-500">{apiResponse.analysis.risk_breakdown.medium_risk}</div>
+                            <div className="text-sm text-muted-foreground">Medium Risk</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-3xl font-bold text-green-500">{apiResponse.analysis.risk_breakdown.low_risk}</div>
+                            <div className="text-sm text-muted-foreground">Low Risk</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Categorized Clauses */}
+                  {apiResponse.analysis.categorized_clauses && (
+                    <div>
+                      <h4 className="font-semibold text-md mb-3">Categorized Clauses</h4>
+                      <div className="space-y-4">
+                        {Object.entries(apiResponse.analysis.categorized_clauses).map(([category, clauses]: [string, any]) => (
+                          <div key={category} className="bg-[#1e1e2e] p-4 rounded-lg">
+                            <h5 className="font-medium mb-3 capitalize flex items-center gap-2">
+                              <div className="w-2 h-2 bg-[#a78bfa] rounded-full" />
+                              {category.replace(/_/g, " ")} ({clauses.length})
+                            </h5>
+                            <div className="space-y-2">
+                              {clauses.map((clause: any, index: number) => (
+                                <div key={index} className="bg-[#0a0a0f] p-3 rounded border border-[#1e1e2e]">
+                                  <div className="flex items-start justify-between mb-2">
+                                    <div className="text-sm font-medium">Clause {clause.index}</div>
+                                    <span className={`px-2 py-1 text-xs font-medium rounded ${
+                                      clause.risk_level === "High" ? "bg-red-500/20 text-red-500" :
+                                      clause.risk_level === "Medium" ? "bg-yellow-500/20 text-yellow-500" :
+                                      "bg-green-500/20 text-green-500"
+                                    }`}>
+                                      {clause.risk_level}
+                                    </span>
+                                  </div>
+                                  <div className="text-xs text-muted-foreground mb-1 whitespace-pre-wrap">{clause.text}</div>
+                                  <div className="text-xs text-muted-foreground italic">{clause.risk_reason}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Key Insights */}
+                  {apiResponse.analysis.key_insights && apiResponse.analysis.key_insights.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold text-md mb-3">Key Insights</h4>
+                      <div className="bg-[#1e1e2e] p-4 rounded-lg">
+                        <div className="space-y-2">
+                          {apiResponse.analysis.key_insights.map((insight: string, index: number) => (
+                            <div key={index} className="flex items-start gap-2">
+                              <div className="w-2 h-2 bg-[#a78bfa] rounded-full mt-2 shrink-0" />
+                              <div className="text-sm">{insight}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Fallback for old format */}
+                  {!apiResponse.analysis.document_summary && apiResponse.analysis.clauses && apiResponse.analysis.clauses.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold text-md mb-3">Contract Clauses Analysis</h4>
+
+                      {/* Categorized Clauses */}
+                      <div className="space-y-6">
+                        {/* High Risk Clauses */}
+                        {apiResponse.analysis.clauses.filter((c: any) => c.risk_level === "High").length > 0 && (
+                          <div>
+                            <h5 className="text-red-500 font-medium mb-3 flex items-center gap-2">
+                              <AlertCircle className="h-4 w-4" />
+                              High Risk Clauses ({apiResponse.analysis.clauses.filter((c: any) => c.risk_level === "High").length})
+                            </h5>
+                            <div className="space-y-3">
+                              {apiResponse.analysis.clauses.filter((c: any) => c.risk_level === "High").map((clause: any, index: number) => (
+                                <div key={index} className="bg-red-500/10 border border-red-500/20 p-4 rounded-lg">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <div className="font-medium">Clause {clause.index}</div>
+                                    <span className="px-2 py-1 text-xs font-medium rounded bg-red-500/20 text-red-500">
+                                      HIGH RISK
+                                    </span>
+                                  </div>
+                                  <div className="text-sm text-muted-foreground mb-2 whitespace-pre-wrap">{clause.text}</div>
+                                  <div className="text-xs text-red-400 italic">{clause.risk_reason}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Medium Risk Clauses */}
+                        {apiResponse.analysis.clauses.filter((c: any) => c.risk_level === "Medium").length > 0 && (
+                          <div>
+                            <h5 className="text-yellow-500 font-medium mb-3 flex items-center gap-2">
+                              <AlertCircle className="h-4 w-4" />
+                              Medium Risk Clauses ({apiResponse.analysis.clauses.filter((c: any) => c.risk_level === "Medium").length})
+                            </h5>
+                            <div className="space-y-3">
+                              {apiResponse.analysis.clauses.filter((c: any) => c.risk_level === "Medium").map((clause: any, index: number) => (
+                                <div key={index} className="bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-lg">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <div className="font-medium">Clause {clause.index}</div>
+                                    <span className="px-2 py-1 text-xs font-medium rounded bg-yellow-500/20 text-yellow-500">
+                                      MEDIUM RISK
+                                    </span>
+                                  </div>
+                                  <div className="text-sm text-muted-foreground mb-2 whitespace-pre-wrap">{clause.text}</div>
+                                  <div className="text-xs text-yellow-400 italic">{clause.risk_reason}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Low Risk Clauses */}
+                        {apiResponse.analysis.clauses.filter((c: any) => c.risk_level === "Low").length > 0 && (
+                          <div>
+                            <h5 className="text-green-500 font-medium mb-3 flex items-center gap-2">
+                              <CheckCircle2 className="h-4 w-4" />
+                              Low Risk Clauses ({apiResponse.analysis.clauses.filter((c: any) => c.risk_level === "Low").length})
+                            </h5>
+                            <div className="space-y-3">
+                              {apiResponse.analysis.clauses.filter((c: any) => c.risk_level === "Low").map((clause: any, index: number) => (
+                                <div key={index} className="bg-green-500/10 border border-green-500/20 p-4 rounded-lg">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <div className="font-medium">Clause {clause.index}</div>
+                                    <span className="px-2 py-1 text-xs font-medium rounded bg-green-500/20 text-green-500">
+                                      LOW RISK
+                                    </span>
+                                  </div>
+                                  <div className="text-sm text-muted-foreground mb-2 whitespace-pre-wrap">{clause.text}</div>
+                                  <div className="text-xs text-green-400 italic">{clause.risk_reason}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Summary Statistics */}
+                      <div className="mt-6 p-4 bg-[#1e1e2e] rounded-lg">
+                        <h5 className="font-medium mb-3">Risk Summary</h5>
+                        <div className="grid grid-cols-3 gap-4 text-center">
+                          <div>
+                            <div className="text-2xl font-bold text-red-500">
+                              {apiResponse.analysis.clauses.filter((c: any) => c.risk_level === "High").length}
+                            </div>
+                            <div className="text-xs text-muted-foreground">High Risk</div>
+                          </div>
+                          <div>
+                            <div className="text-2xl font-bold text-yellow-500">
+                              {apiResponse.analysis.clauses.filter((c: any) => c.risk_level === "Medium").length}
+                            </div>
+                            <div className="text-xs text-muted-foreground">Medium Risk</div>
+                          </div>
+                          <div>
+                            <div className="text-2xl font-bold text-green-500">
+                              {apiResponse.analysis.clauses.filter((c: any) => c.risk_level === "Low").length}
+                            </div>
+                            <div className="text-xs text-muted-foreground">Low Risk</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Recommendations */}
+                  {apiResponse.analysis.recommendations && apiResponse.analysis.recommendations.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold text-md mb-3">Recommendations</h4>
+                      <div className="space-y-2">
+                        {apiResponse.analysis.recommendations.map((rec: string, index: number) => (
+                          <div key={index} className="flex items-start gap-2">
+                            <div className="w-2 h-2 bg-[#a78bfa] rounded-full mt-2 shrink-0" />
+                            <div className="text-sm">{rec}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Raw JSON Toggle */}
+                  <div>
+                    <details className="cursor-pointer">
+                      <summary className="text-sm text-muted-foreground hover:text-foreground">
+                        View Raw API Response
+                      </summary>
+                      <div className="bg-[#1e1e2e] p-4 rounded-lg mt-2">
+                        <pre className="text-xs text-muted-foreground whitespace-pre-wrap">
+                          {JSON.stringify(apiResponse, null, 2)}
+                        </pre>
+                      </div>
+                    </details>
+                  </div>
+                </>
+              ) : (
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">API Response</h3>
+                  <div className="bg-[#1e1e2e] p-4 rounded-lg">
+                    <pre className="text-sm text-muted-foreground whitespace-pre-wrap">
+                      {JSON.stringify(apiResponse, null, 2)}
+                    </pre>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-2">
+                <Button onClick={resetUpload} variant="outline">
+                  Upload New PDF
+                </Button>
+              </div>
             </div>
-          </ScrollArea>
-        </>
+          </div>
+        </Card>
       )}
     </div>
   );
 };
 
-export default BulkUploadPage;
+export default Upload3Page;
