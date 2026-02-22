@@ -9,6 +9,15 @@ import {
   CollapsibleTrigger,
 } from "@repo/design-system/components/ui/collapsible";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@repo/design-system/components/ui/dialog";
+import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -135,7 +144,7 @@ export const GlobalSidebar = ({ children }: GlobalSidebarProperties) => {
               <div
                 className={cn(
                   "h-9 overflow-hidden transition-all [&>div]:w-full",
-                  sidebar.open ? "" : "-mx-1"
+                  sidebar.open ? "" : "-mx-1",
                 )}
               >
                 <OrganizationSwitcher
@@ -201,6 +210,35 @@ export const GlobalSidebar = ({ children }: GlobalSidebarProperties) => {
         </SidebarContent>
         <SidebarFooter>
           <SidebarMenu>
+            <SidebarMenuItem>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="w-full" variant="outline">
+                    Connect to Lawyer
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Connect to Lawyer</DialogTitle>
+                    <DialogDescription>
+                      Find an official lawyer through LawRato. You will be
+                      redirected to their website to continue.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <Button asChild>
+                      <a
+                        href="https://lawrato.com/"
+                        rel="noreferrer"
+                        target="_blank"
+                      >
+                        Find Official Lawyer
+                      </a>
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </SidebarMenuItem>
             <SidebarMenuItem className="flex items-center gap-2">
               <UserButton
                 appearance={{
