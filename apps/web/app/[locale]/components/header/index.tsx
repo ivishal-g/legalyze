@@ -2,7 +2,7 @@
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
 /** biome-ignore-all lint/nursery/noLeakedRender: <explanation> */
 "use client";
-import { useUser, UserButton } from "@repo/auth/client";
+import { UserButton, useUser } from "@repo/auth/client";
 import { ModeToggle } from "@repo/design-system/components/mode-toggle";
 import { Button } from "@repo/design-system/components/ui/button";
 import type { Dictionary } from "@repo/internationalization";
@@ -31,7 +31,10 @@ export const Header = ({ dictionary }: HeaderProps) => {
           <Button asChild size="sm" variant="ghost">
             <Link href="/contact">{dictionary.web.header.contact}</Link>
           </Button>
-        </nav>
+          <Button asChild size="sm" variant="ghost">
+          <Link href="/team">Team</Link>
+        </Button>
+      </nav>
 
         {/* Center: Logo */}
         <Link className="flex items-center justify-center gap-2.5" href="/">
