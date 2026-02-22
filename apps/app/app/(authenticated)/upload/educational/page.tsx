@@ -14,7 +14,7 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type UploadStatus = "idle" | "uploading" | "processing" | "complete" | "error";
 
@@ -28,32 +28,19 @@ type Contract = {
   contractType?: string;
   riskScore?: number;
   uploadedAt: Date;
+  errorMessage?: string;
 };
 
-const recentContracts: Contract[] = [
-  {
-    id: "1",
-    fileName: "student_enrollment_agreement.pdf",
-    fileType: "pdf",
-    size: 1_800_000,
-    status: "complete",
-    progress: 100,
-    contractType: "Enrollment Agreement",
-    riskScore: 38,
-    uploadedAt: new Date(Date.now() - 4_800_000),
-  },
-  {
-    id: "2",
-    fileName: "faculty_employment_contract.pdf",
-    fileType: "pdf",
-    size: 2_900_000,
-    status: "complete",
-    progress: 100,
-    contractType: "Employment Contract",
-    riskScore: 52,
-    uploadedAt: new Date(Date.now() - 9_600_000),
-  },
-];
+type DBContract = {
+  id: string;
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+  status: string;
+  contractType?: string;
+  riskScore?: number;
+  createdAt: string;
+};
 
 const formatBytes = (bytes: number) => {
   if (bytes === 0) {
@@ -87,8 +74,37 @@ const getRiskBgColor = (score: number) => {
 
 const EducationalPage = () => {
   const [uploads, setUploads] = useState<Contract[]>([]);
+  const [recentContracts, setRecentContracts] = useState<Contract[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch recent contracts from database
+  const fetchRecentContracts = useCallback(async () => {
+    try {
+      const res = await fetch("/api/contracts?category=EDUCATIONAL&limit=10");
+      if (res.ok) {
+        const data = await res.json();
+        const contracts: Contract[] = data.contracts.map((c: DBContract) => ({
+          id: c.id,
+          fileName: c.fileName,
+          fileType: c.fileType,
+          size: c.fileSize,
+          status: c.status.toLowerCase() as UploadStatus,
+          progress: 100,
+          contractType: c.contractType,
+          riskScore: c.riskScore ?? undefined,
+          uploadedAt: new Date(c.createdAt),
+        }));
+        setRecentContracts(contracts);
+      }
+    } catch (error) {
+      console.error("Failed to fetch recent contracts:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchRecentContracts();
+  }, [fetchRecentContracts]);
 
   const handleDragEnter = (e: React.DragEvent) => {
     e.preventDefault();
@@ -145,8 +161,9 @@ const EducationalPage = () => {
         continue;
       }
 
+      const tempId = Math.random().toString(36).substring(7);
       const newContract: Contract = {
-        id: Math.random().toString(36).substring(7),
+        id: tempId,
         fileName: file.name,
         fileType: file.name.split(".").pop() || "unknown",
         size: file.size,
@@ -157,51 +174,98 @@ const EducationalPage = () => {
 
       setUploads((prev) => [...prev, newContract]);
 
-      simulateUpload(newContract.id);
+      // Real upload to API
+      uploadFile(file, tempId);
     }
   };
 
-  const simulateUpload = (id: string) => {
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 10;
-
-      if (progress >= 100) {
-        clearInterval(interval);
+  const uploadFile = async (file: File, tempId: string) => {
+    try {
+      // Simulate progress while uploading
+      const progressInterval = setInterval(() => {
         setUploads((prev) =>
-          prev.map((upload) =>
-            upload.id === id
-              ? {
-                  ...upload,
-                  status: "processing",
-                  progress: 100,
-                }
-              : upload
+          prev.map((u) =>
+            u.id === tempId
+              ? { ...u, progress: Math.min(u.progress + 15, 90) }
+              : u
           )
         );
+      }, 300);
 
-        setTimeout(() => {
-          setUploads((prev) =>
-            prev.map((upload) =>
-              upload.id === id
-                ? {
-                    ...upload,
-                    status: "complete",
-                    contractType: "Educational Document",
-                    riskScore: Math.floor(Math.random() * (85 - 25 + 1)) + 25,
-                  }
-                : upload
-            )
-          );
-        }, 2000);
-      } else {
-        setUploads((prev) =>
-          prev.map((upload) =>
-            upload.id === id ? { ...upload, progress } : upload
-          )
-        );
+      // Step 1: Upload file
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("category", "EDUCATIONAL");
+
+      const uploadRes = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      clearInterval(progressInterval);
+
+      if (!uploadRes.ok) {
+        const err = await uploadRes.json();
+        throw new Error(err.error || "Upload failed");
       }
-    }, 200);
+
+      const { id: contractId } = await uploadRes.json();
+
+      // Update with real ID and set to processing
+      setUploads((prev) =>
+        prev.map((u) =>
+          u.id === tempId
+            ? { ...u, id: contractId, progress: 100, status: "processing" }
+            : u
+        )
+      );
+
+      // Step 2: Trigger analysis
+      const analyzeRes = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contractId }),
+      });
+
+      if (!analyzeRes.ok) {
+        const err = await analyzeRes.json();
+        throw new Error(err.error || "Analysis failed");
+      }
+
+      const analysis = await analyzeRes.json();
+
+      // Update with analysis results
+      setUploads((prev) =>
+        prev.map((u) =>
+          u.id === contractId
+            ? {
+                ...u,
+                status: "complete",
+                contractType: analysis.contractType,
+                riskScore: analysis.riskScore,
+              }
+            : u
+        )
+      );
+
+      // Refresh recent contracts list
+      fetchRecentContracts();
+    } catch (error) {
+      console.error("Upload/analysis error:", error);
+      setUploads((prev) =>
+        prev.map((u) =>
+          u.id === tempId
+            ? {
+                ...u,
+                status: "error",
+                progress: 0,
+                errorMessage:
+                  error instanceof Error ? error.message : "Upload failed",
+              }
+            : u
+        )
+      );
+    }
   };
 
   const removeUpload = (id: string) => {
@@ -228,7 +292,7 @@ const EducationalPage = () => {
       case "uploading":
         return "Uploading...";
       case "processing":
-        return "Analyzing...";
+        return "Analyzing with AI...";
       case "complete":
         return "Complete";
       case "error":
@@ -351,15 +415,25 @@ const EducationalPage = () => {
                         </Button>
                       </div>
 
-                      {upload.status !== "complete" && (
-                        <div className="space-y-2">
-                          <Progress className="h-1" value={upload.progress} />
-                          <div className="flex items-center gap-2">
-                            {getStatusIcon(upload.status)}
-                            <span className="text-muted-foreground text-xs">
-                              {getStatusText(upload.status)}
-                            </span>
+                      {upload.status !== "complete" &&
+                        upload.status !== "error" && (
+                          <div className="space-y-2">
+                            <Progress className="h-1" value={upload.progress} />
+                            <div className="flex items-center gap-2">
+                              {getStatusIcon(upload.status)}
+                              <span className="text-muted-foreground text-xs">
+                                {getStatusText(upload.status)}
+                              </span>
+                            </div>
                           </div>
+                        )}
+
+                      {upload.status === "error" && (
+                        <div className="mt-2 flex items-center gap-2">
+                          <AlertCircle className="h-4 w-4 text-[#ff3b5c]" />
+                          <span className="text-[#ff3b5c] text-xs">
+                            {upload.errorMessage || "Upload failed"}
+                          </span>
                         </div>
                       )}
 
@@ -403,66 +477,73 @@ const EducationalPage = () => {
             <h3 className="mb-3 font-semibold">Recent Educational Uploads</h3>
             <ScrollArea className="h-[300px]">
               <div className="space-y-3">
-                {recentContracts.map((contract) => (
-                  <div
-                    className="rounded-lg border border-[#1e1e2e] bg-[#0a0a0f] p-3 transition-colors hover:bg-[#111118]"
-                    key={contract.id}
-                  >
-                    <div className="mb-2 flex items-start justify-between">
-                      <div className="flex items-start gap-2">
-                        <FileText className="mt-0.5 h-4 w-4 text-muted-foreground" />
-                        <div>
-                          <p className="font-medium text-sm">
-                            {contract.fileName}
-                          </p>
-                          <p className="text-muted-foreground text-xs">
-                            {formatBytes(contract.size)} •{" "}
-                            {contract.uploadedAt.toLocaleDateString()}
-                          </p>
+                {recentContracts.length === 0 ? (
+                  <p className="py-8 text-center text-muted-foreground text-sm">
+                    No educational contracts uploaded yet. Upload your first
+                    document to get started.
+                  </p>
+                ) : (
+                  recentContracts.map((contract) => (
+                    <div
+                      className="rounded-lg border border-[#1e1e2e] bg-[#0a0a0f] p-3 transition-colors hover:bg-[#111118]"
+                      key={contract.id}
+                    >
+                      <div className="mb-2 flex items-start justify-between">
+                        <div className="flex items-start gap-2">
+                          <FileText className="mt-0.5 h-4 w-4 text-muted-foreground" />
+                          <div>
+                            <p className="font-medium text-sm">
+                              {contract.fileName}
+                            </p>
+                            <p className="text-muted-foreground text-xs">
+                              {formatBytes(contract.size)} •{" "}
+                              {contract.uploadedAt.toLocaleDateString()}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Badge
-                        className="font-mono text-xs"
-                        style={{ background: "#1e1e2e", color: "#a78bfa" }}
-                        variant="secondary"
-                      >
-                        {contract.contractType}
-                      </Badge>
-                      {contract.riskScore !== undefined && (
+                      <div className="flex items-center justify-between">
                         <Badge
-                          className={cn(
-                            "font-mono text-xs",
-                            getRiskBgColor(contract.riskScore),
-                            getRiskColor(contract.riskScore)
-                          )}
+                          className="font-mono text-xs"
+                          style={{ background: "#1e1e2e", color: "#a78bfa" }}
                           variant="secondary"
                         >
-                          {contract.riskScore}/100
+                          {contract.contractType || "Processing..."}
                         </Badge>
-                      )}
+                        {contract.riskScore !== undefined && (
+                          <Badge
+                            className={cn(
+                              "font-mono text-xs",
+                              getRiskBgColor(contract.riskScore),
+                              getRiskColor(contract.riskScore)
+                            )}
+                            variant="secondary"
+                          >
+                            {contract.riskScore}/100
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="mt-3 flex gap-2">
+                        <Button
+                          className="flex-1"
+                          size="sm"
+                          type="button"
+                          variant="outline"
+                        >
+                          View Report
+                        </Button>
+                        <Button
+                          className="flex-1"
+                          size="sm"
+                          type="button"
+                          variant="outline"
+                        >
+                          Chat
+                        </Button>
+                      </div>
                     </div>
-                    <div className="mt-3 flex gap-2">
-                      <Button
-                        className="flex-1"
-                        size="sm"
-                        type="button"
-                        variant="outline"
-                      >
-                        View Report
-                      </Button>
-                      <Button
-                        className="flex-1"
-                        size="sm"
-                        type="button"
-                        variant="outline"
-                      >
-                        Chat
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </ScrollArea>
           </Card>

@@ -2,53 +2,64 @@
 
 import type { Dictionary } from "@repo/internationalization";
 
+import { InfiniteSlider } from "@/components/ui/infinite-slider";
+import { ProgressiveBlur } from "@/components/ui/progressive-blur";
+
 type CasesProps = {
   dictionary: Dictionary;
 };
 
-const logos = [
-  { name: "LexisCorp", bg: "#2563EB", initials: "LC" },
-  { name: "ArgoLegal", bg: "#7C3AED", initials: "AL" },
-  { name: "TrustBase", bg: "#0D9488", initials: "TB" },
-  { name: "ClarityAI", bg: "#EA580C", initials: "CA" },
-  { name: "VaultSign", bg: "#DC2626", initials: "VS" },
-  { name: "NexaDocs", bg: "#4F46E5", initials: "ND" },
-  { name: "CoreBridge", bg: "#16A34A", initials: "CB" },
-  { name: "SignFlow", bg: "#DB2777", initials: "SF" },
-  { name: "ContractIQ", bg: "#D97706", initials: "CQ" },
+const LOGOS = [
+  { src: "https://upload.wikimedia.org/wikipedia/commons/5/51/Google_Cloud_logo.svg", alt: "Google Cloud" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg", alt: "AWS" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Microsoft_Azure.svg", alt: "Azure" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg", alt: "OpenAI" },
+  { src: "https://assets.vercel.com/image/upload/v1588805858/repositories/vercel/logo.png", alt: "Vercel" },
+  { src: "https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg", alt: "Stripe" },
 ];
 
-const track = [...logos, ...logos];
+export function Cases({ dictionary }: CasesProps) {
+  const logos = LOGOS;
+  return (
+    <section>
+        <h2 className="mb-5 text-center">
+          <span className="block font-medium text-2xl text-muted-foreground">
+            Already used by
+          </span>
+          <span className="font-black text-2xl text-primary tracking-tight md:text-3xl">
+            Best in the Game
+          </span>
+        </h2>
+    <div className="relative mx-auto max-w-3xl bg-linear-to-r from-secondary via-transparent to-secondary py-13  md:border-x">
+      <div className="-translate-x-1/2 -top-px pointer-events-none absolute left-1/2 w-screen border-t" />
 
-export const Cases = ({ dictionary }: CasesProps) => (
-  <div className="w-full overflow-hidden py-8 lg:py-12">
-    <div className="container mx-auto">
-      <p className="mb-8 text-center text-muted-foreground text-sm">
-        {dictionary.web.home.cases.title}
-      </p>
-    </div>
-    <div className="mask-[linear-gradient(to_right,transparent,white_8%,white_92%,transparent)] relative flex overflow-hidden">
-      <div
-        className="flex shrink-0 animate-[marquee_28s_linear_infinite] gap-6"
-        style={{ minWidth: "max-content" }}
-      >
-        {track.map((logo, i) => (
-          <div
-            className="flex h-28 w-48 flex-col items-center justify-center gap-3 rounded-2xl border bg-muted/50 shadow-sm transition-colors hover:bg-muted"
-            key={`${logo.name}-${i}`}
-          >
-            <div
-              className="flex h-12 w-12 items-center justify-center rounded-xl font-bold text-base text-white shadow-md"
-              style={{ backgroundColor: logo.bg }}
-            >
-              {logo.initials}
-            </div>
-            <span className="font-semibold text-foreground text-sm">
-              {logo.name}
-            </span>
-          </div>
+      <InfiniteSlider gap={42} reverse speed={60} speedOnHover={20}>
+        {logos.map((logo) => (
+          <img
+            alt={logo.alt}
+            className="pointer-events-none h-4 select-none md:h-5 dark:brightness-0 dark:invert"
+            height="auto"
+            key={`logo-${logo.alt}`}
+            loading="lazy"
+            src={logo.src}
+            width="auto"
+          />
         ))}
-      </div>
+      </InfiniteSlider>
+
+      <ProgressiveBlur
+        blurIntensity={1}
+        className="pointer-events-none absolute top-0 left-0 h-full w-40"
+        direction="left"
+      />
+      <ProgressiveBlur
+        blurIntensity={1}
+        className="pointer-events-none absolute top-0 right-0 h-full w-40"
+        direction="right"
+      />
+
+      <div className="-translate-x-1/2 -bottom-px pointer-events-none absolute left-1/2 w-screen border-b" />
     </div>
-  </div>
-);
+    </section>
+  );
+}

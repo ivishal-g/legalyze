@@ -13,5 +13,5 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ]
+, "../web/app/[locale]/(home)/components/progressive-blur.tsx", "../web/app/[locale]/(home)/components/infinite-slider.tsx"  ]
 }

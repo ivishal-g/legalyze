@@ -31,7 +31,6 @@ import { NotificationsTrigger } from "@repo/notifications/components/trigger";
 import {
   ChevronRightIcon,
   FileSearchIcon,
-  LayoutDashboardIcon,
   MessageSquareIcon,
   UploadIcon,
 } from "lucide-react";
@@ -83,25 +82,6 @@ const data = {
         {
           title: "Bulk Upload",
           url: "/upload/bulk",
-        },
-      ],
-    },
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: LayoutDashboardIcon,
-      items: [
-        {
-          title: "All Contracts",
-          url: "/dashboard",
-        },
-        {
-          title: "High Risk",
-          url: "/dashboard/high-risk",
-        },
-        {
-          title: "Recent Analysis",
-          url: "/dashboard/recent",
         },
       ],
     },
