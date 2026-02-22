@@ -27,6 +27,9 @@ export const Header = ({ dictionary }: HeaderProps) => (
         <Button asChild size="sm" variant="ghost">
           <Link href="/contact">{dictionary.web.header.contact}</Link>
         </Button>
+        <Button asChild size="sm" variant="ghost">
+          <Link href="/team">Team</Link>
+        </Button>
       </nav>
 
       {/* Center: Logo */}
